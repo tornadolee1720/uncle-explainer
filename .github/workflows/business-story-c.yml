@@ -7,6 +7,7 @@ on:
       - '.github/workflows/business-story-c.yml'
       - 'scripts/build_cash_story_c.mjs'
       - 'scripts/make_cash_story_art.mjs'
+      - 'scripts/prepare_ci_fonts_fast.mjs'
       - 'tests/business-c/**'
       - 'kit/uncle.js'
   workflow_dispatch:
@@ -30,11 +31,9 @@ jobs:
       - name: Set up original vpro renderer and Traditional Chinese fonts
         run: |
           npm ci
-          npx playwright install --with-deps chromium
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg fonts-noto-cjk
-          python -m pip install --quiet fonttools
-          python scripts/prepare_ci_fonts.py
+          npx playwright install chromium
+          node scripts/prepare_ci_fonts_fast.mjs
+          ffmpeg -version | head -n 1
       - name: Make new film and original business illustrations
         run: |
           node scripts/new_film.mjs "$RUNNER_TEMP/business-c" --vertical

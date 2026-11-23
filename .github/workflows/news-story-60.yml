@@ -6,6 +6,7 @@ on:
       - '.github/workflows/news-story-60.yml'
       - 'scripts/build_news_story_60.mjs'
       - 'scripts/fetch_news_broll.mjs'
+      - 'scripts/fetch_nasa_motion_broll.mjs'
       - 'scripts/fetch_secure_fish.py'
       - 'kit/uncle.js'
       - 'tests/news-proof/nvidia_jobs.json'
@@ -37,6 +38,7 @@ jobs:
         run: |
           node scripts/new_film.mjs "$RUNNER_TEMP/news60" --vertical
           node scripts/fetch_news_broll.mjs "$RUNNER_TEMP/news60"
+          node scripts/fetch_nasa_motion_broll.mjs "$RUNNER_TEMP/news60"
       - name: Capture official NVIDIA sources (real browser)
         run: |
           node scripts/snap_news.mjs tests/news-proof/nvidia_jobs.json
@@ -59,13 +61,18 @@ jobs:
           duration=float(media['format']['duration'])
           v=[s for s in media['streams'] if s['codec_type']=='video']
           if not(48<=duration<=85):raise SystemExit(f'Failed narrative duration window: {duration}s')
+          story=json.loads((d/'NEWS_MANIFEST.json').read_text())
+          motion=json.loads((d/'NASA_MOTION_CREDITS.json').read_text())
+          assert len(motion.get('sources',[]))==2, 'Missing source-verified NASA videos'
+          assert story['motion_scene_count']==2 and story['news_proof_scene_count']==1
+          assert all(item['source_kind']=='NASA_HISTORICAL_REAL_BROLL' and item['frames']>=180 for item in motion['sources'])
           if len(v)!=1 or v[0]['codec_name']!='h264' or v[0]['r_frame_rate']!='30/1':
             raise SystemExit('Expected native-vpro H264 at 30 fps')
           if int(v[0]['width'])!=720 or int(v[0]['height'])!=1280:raise SystemExit('Wrong 9:16 resolution')
           if abs(duration-tl['duration'])>.2:raise SystemExit('Video duration mismatch')
-          report={'status':'VISUAL_ONLY_PASS','source':'NVIDIA official Playwright screenshot','shot_count':10,'voice':'NOT_SYNTHESIZED_OR_IMPORTED',
+          report={'status':'REAL_BROLL_VISUAL_PASS','source':'NVIDIA official Playwright screenshot','shot_count':10,'voice':'NOT_SYNTHESIZED_OR_IMPORTED',
                   'timing':'ESTIMATED_STUB_NOT_WORD_ALIGNED','duration_s':duration,'resolution':'720x1280','fps':30,
-                  'licensed_image':'Derrick Coetzee / CC0; generic data center, NOT NVIDIA footage','publish_allowed':False}
+                  'licensed_image':story['broll']['license'],'real_motion_sources':len(motion['sources']),'real_motion_frames':sum(m['frames'] for m in motion['sources']), 'moving_broll_is_nasa_2010_not_nvidia':True,'publish_allowed':False}
           (d/'out'/'VISUAL_QA.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
           print(json.dumps(report,ensure_ascii=False))
           PY
@@ -98,6 +105,7 @@ jobs:
             ${{ runner.temp }}/news60/out/VISUAL_QA.json
             ${{ runner.temp }}/news60/NEWS_MANIFEST.json
             ${{ runner.temp }}/news60/BROLL_CREDITS.json
+            ${{ runner.temp }}/news60/NASA_MOTION_CREDITS.json
             ${{ runner.temp }}/news60/NEWS_SOURCE_CREDITS.md
             ${{ runner.temp }}/news60/script.json
             ${{ runner.temp }}/news60/film.js

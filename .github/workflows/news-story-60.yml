@@ -7,6 +7,7 @@ on:
       - 'scripts/build_news_story_60.mjs'
       - 'scripts/fetch_news_broll.mjs'
       - 'scripts/fetch_nasa_motion_broll.mjs'
+      - 'scripts/assess_news_visuals.mjs'
       - 'scripts/fetch_secure_fish.py'
       - 'kit/uncle.js'
       - 'tests/news-proof/nvidia_jobs.json'
@@ -46,6 +47,7 @@ jobs:
       - name: Build cinematic documentary scenes from verified sources
         run: |
           node scripts/build_news_story_60.mjs tests/news-proof/nvidia_jobs.json "$RUNNER_TEMP/news60"
+          node scripts/assess_news_visuals.mjs "$RUNNER_TEMP/news60"
           node scripts/timeline_stub.mjs "$RUNNER_TEMP/news60/script.json"
           node scripts/render.mjs --dir "$RUNNER_TEMP/news60" --check
           node scripts/render.mjs --dir "$RUNNER_TEMP/news60" --sheet
@@ -103,6 +105,7 @@ jobs:
             ${{ runner.temp }}/news60/out/visual_720.mp4
             ${{ runner.temp }}/news60/out/sheet.png
             ${{ runner.temp }}/news60/out/VISUAL_QA.json
+            ${{ runner.temp }}/news60/out/EDITORIAL_QA.json
             ${{ runner.temp }}/news60/NEWS_MANIFEST.json
             ${{ runner.temp }}/news60/BROLL_CREDITS.json
             ${{ runner.temp }}/news60/NASA_MOTION_CREDITS.json

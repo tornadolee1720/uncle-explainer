@@ -1,0 +1,115 @@
+{
+  "project": "Uncle Cashflow Story C / 台灣商業故事",
+  "type": "fictional_educational_scenario",
+  "title": "一家公司明明有訂單，為什麼還會倒？",
+  "disclaimer": "純屬虛構案例，金額為教學假設，非真實公司，亦非倒閉或破產的法律判定",
+  "scenario": {
+    "company": "虛構包裝工廠",
+    "currency": "TWD",
+    "order_contract_amount": 1000000,
+    "initial_unrestricted_cash": 200000,
+    "prepaid_material_cost": 450000,
+    "pre_collection_payroll_overhead": 250000,
+    "delivery_and_acceptance_day": 20,
+    "payment_days_after_acceptance": 90,
+    "max_precollection_cash_out": 700000,
+    "bridge_need": 500000
+  },
+  "assumptions": [
+    "訂單只是合約，並非簽單當下就能認列的營收或入帳現金",
+    "假設供應商要求全額材料款45萬於出貨前支付",
+    "假設薪資和營運費25萬也在客戶款項入帳前必須支付",
+    "假設客戶約定在完成交貨且驗收後90日才支付100萬",
+    "簡化模型未納入營業稅、其他費用、稅金、存貨損耗、信用額度及新訂單",
+    "現金短缺代表周轉風險，並不等同公司法律上宣告破產"
+  ],
+  "references": [
+    {
+      "title": "澳洲政府 cashflow guide",
+      "url": "https://business.gov.au/guide/guide-to-managing-cash-flow",
+      "supports": "收付款時間與流動性、庫存管理"
+    },
+    {
+      "title": "澳洲政府 payment terms",
+      "url": "https://business.gov.au/finance/payments-and-invoicing/payment-terms",
+      "supports": "付款期限影響現金流"
+    },
+    {
+      "title": "SBA lean planning",
+      "url": "https://www.sba.gov/blog/2016/2016-07/5-things-business-owners-do-better-lean-business-planning/",
+      "supports": "帳面獲利與庫存/應收帳款流動性不同"
+    }
+  ],
+  "script": [
+    {
+      "id": "b01",
+      "intent": "hook",
+      "text": "老闆！明明接到一百萬訂單，怎麼今天連薪水都快付不出來？",
+      "viewer_gain": "先形成有訂單卻沒有現金的強烈矛盾",
+      "gap": 0.25
+    },
+    {
+      "id": "b02",
+      "intent": "setup",
+      "text": "假設有家小工廠，接到一筆一百萬元的包裝訂單。",
+      "viewer_gain": "知道這是一間虛構工廠，訂單一百萬不是現金",
+      "gap": 0.28
+    },
+    {
+      "id": "b03",
+      "intent": "delay",
+      "text": "但客戶說，交貨驗收後九十天，才會付款。",
+      "viewer_gain": "看見現金流入與交付完成之間的時間差",
+      "gap": 0.3
+    },
+    {
+      "id": "b04",
+      "intent": "outflow",
+      "text": "材料供應商卻要先收四十五萬。",
+      "viewer_gain": "先看見採購材料的第一筆現金支出",
+      "gap": 0.3
+    },
+    {
+      "id": "b05",
+      "intent": "outflow",
+      "text": "員工薪資和廠房費用，還得先付二十五萬。",
+      "viewer_gain": "第二筆固定現金支出讓前期共要付七十萬",
+      "gap": 0.3
+    },
+    {
+      "id": "b06",
+      "intent": "reveal",
+      "text": "問題是，老闆帳戶裡只剩二十萬。",
+      "viewer_gain": "原來可動用資金遠小於必須先付的成本",
+      "gap": 0.28
+    },
+    {
+      "id": "b07",
+      "intent": "mechanism",
+      "text": "客戶還沒付錢，現金缺口就已經五十萬。",
+      "viewer_gain": "用動畫親眼看到七十萬減二十萬等於五十萬缺口",
+      "gap": 0.32
+    },
+    {
+      "id": "b08",
+      "intent": "correction",
+      "text": "訂單一百萬，不等於今天能拿到一百萬。",
+      "viewer_gain": "把訂單與手上真正可以使用的現金分開",
+      "gap": 0.3
+    },
+    {
+      "id": "b09",
+      "intent": "response",
+      "text": "談訂金、調整付款期限，或備妥周轉資金，才可能撐過這段空窗。",
+      "viewer_gain": "帶走實際可行的資金周轉改善方向而非神奇保證",
+      "gap": 0.32
+    },
+    {
+      "id": "b10",
+      "intent": "takeaway",
+      "text": "訂單決定生意有沒有機會，現金流決定公司能不能撐到收錢。",
+      "viewer_gain": "記住接單能力和收付款能力不是同一件事",
+      "gap": 0.3
+    }
+  ]
+}

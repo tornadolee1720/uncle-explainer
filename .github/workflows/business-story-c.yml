@@ -33,7 +33,12 @@ jobs:
           npm ci
           npx playwright install chromium
           node scripts/prepare_ci_fonts_fast.mjs
-          ffmpeg -version | head -n 1
+          npm install --no-save --no-package-lock @ffmpeg-installer/linux-x64 @ffprobe-installer/linux-x64
+          test -x "node_modules/@ffmpeg-installer/linux-x64/ffmpeg"
+          test -x "node_modules/@ffprobe-installer/linux-x64/ffprobe"
+          echo "$PWD/node_modules/@ffmpeg-installer/linux-x64" >> "$GITHUB_PATH"
+          echo "$PWD/node_modules/@ffprobe-installer/linux-x64" >> "$GITHUB_PATH"
+          node_modules/@ffmpeg-installer/linux-x64/ffmpeg -hide_banner -encoders | grep libx264
       - name: Make new film and original business illustrations
         run: |
           node scripts/new_film.mjs "$RUNNER_TEMP/business-c" --vertical

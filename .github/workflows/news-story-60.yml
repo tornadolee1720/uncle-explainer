@@ -1,0 +1,104 @@
+name: 60s documentary news visual smoke (no publishing)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/news-story-60.yml'
+      - 'scripts/build_news_story_60.mjs'
+      - 'scripts/fetch_news_broll.mjs'
+      - 'scripts/fetch_secure_fish.py'
+      - 'kit/uncle.js'
+      - 'tests/news-proof/nvidia_jobs.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  documentary:
+    name: Genuine NVIDIA source + licensed documentary image + native vpro
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Native runtime and fonts
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-noto-cjk
+          python -m pip install --quiet fonttools
+          python scripts/prepare_ci_fonts.py
+      - name: Prepare licensed photo (CC0, generic data center)
+        run: |
+          node scripts/new_film.mjs "$RUNNER_TEMP/news60" --vertical
+          node scripts/fetch_news_broll.mjs "$RUNNER_TEMP/news60"
+      - name: Capture official NVIDIA sources (real browser)
+        run: |
+          node scripts/snap_news.mjs tests/news-proof/nvidia_jobs.json
+          node scripts/verify_news_capture.mjs tests/news-proof/nvidia_jobs.json
+      - name: Build cinematic documentary scenes from verified sources
+        run: |
+          node scripts/build_news_story_60.mjs tests/news-proof/nvidia_jobs.json "$RUNNER_TEMP/news60"
+          node scripts/timeline_stub.mjs "$RUNNER_TEMP/news60/script.json"
+          node scripts/render.mjs --dir "$RUNNER_TEMP/news60" --check
+          node scripts/render.mjs --dir "$RUNNER_TEMP/news60" --sheet
+          node scripts/render.mjs --dir "$RUNNER_TEMP/news60" --video --h 720
+          python - <<'PY'
+          import os,json,subprocess
+          from pathlib import Path
+          d=Path(os.environ['RUNNER_TEMP'])/'news60'
+          tl=json.loads((d/'timeline.json').read_text())
+          video=d/'out'/'visual_720.mp4'
+          r=subprocess.run(['ffprobe','-v','error','-show_format','-show_streams','-of','json',str(video)],check=True,capture_output=True,text=True)
+          media=json.loads(r.stdout)
+          duration=float(media['format']['duration'])
+          v=[s for s in media['streams'] if s['codec_type']=='video']
+          if not(48<=duration<=85):raise SystemExit(f'Failed narrative duration window: {duration}s')
+          if len(v)!=1 or v[0]['codec_name']!='h264' or v[0]['r_frame_rate']!='30/1':
+            raise SystemExit('Expected native-vpro H264 at 30 fps')
+          if int(v[0]['width'])!=720 or int(v[0]['height'])!=1280:raise SystemExit('Wrong 9:16 resolution')
+          if abs(duration-tl['duration'])>.2:raise SystemExit('Video duration mismatch')
+          report={'status':'VISUAL_ONLY_PASS','source':'NVIDIA official Playwright screenshot','shot_count':10,'voice':'NOT_SYNTHESIZED_OR_IMPORTED',
+                  'timing':'ESTIMATED_STUB_NOT_WORD_ALIGNED','duration_s':duration,'resolution':'720x1280','fps':30,
+                  'licensed_image':'Derrick Coetzee / CC0; generic data center, NOT NVIDIA footage','publish_allowed':False}
+          (d/'out'/'VISUAL_QA.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
+          print(json.dumps(report,ensure_ascii=False))
+          PY
+      - name: Optional Fish TTS path (must provide secure short-lived secret)
+        env:
+          UNCLE_FISH_AUDIO_URL: ${{ secrets.UNCLE_FISH_AUDIO_URL }}
+        run: |
+          if [ -z "$UNCLE_FISH_AUDIO_URL" ]; then
+            echo "Fish master secret missing: VISUAL ONLY passed; no fake synced video."
+            exit 0
+          fi
+          python scripts/fetch_secure_fish.py "$RUNNER_TEMP/news60/fish_master.mp3"
+          python -m pip install --quiet faster-whisper opencc-python-reimplemented
+          python scripts/import_fish_master.py "$RUNNER_TEMP/news60" "$RUNNER_TEMP/news60/fish_master.mp3" --whisper-model base --min-match .65
+          node scripts/render.mjs --dir "$RUNNER_TEMP/news60" --check
+          node scripts/render.mjs --dir "$RUNNER_TEMP/news60" --video --h 720
+          python scripts/mix.py "$RUNNER_TEMP/news60"
+          python scripts/mux_news_av.py "$RUNNER_TEMP/news60" fish_project_voice
+          echo "Fish voiced preview technically checked, but not uploaded to public repo artifact by design."
+      - name: Upload reviewable silent visual and proof manifests only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentary-news-60-visual-${{ github.run_number }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/news60/out/visual_720.mp4
+            ${{ runner.temp }}/news60/out/sheet.png
+            ${{ runner.temp }}/news60/out/VISUAL_QA.json
+            ${{ runner.temp }}/news60/NEWS_MANIFEST.json
+            ${{ runner.temp }}/news60/BROLL_CREDITS.json
+            ${{ runner.temp }}/news60/NEWS_SOURCE_CREDITS.md
+            ${{ runner.temp }}/news60/script.json
+            ${{ runner.temp }}/news60/film.js
+            tests/news-proof/docs/

@@ -1,0 +1,11 @@
+# Python 依賴（ffmpeg / ffprobe 需另裝並放進 PATH）
+edge-tts>=7.3.1        # 臨時配音（舊版本會被伺服器 403，要保持更新）
+numpy>=1.24            # 波形和響度分析
+yt-dlp>=2026.8.19      # 下載素材（過期就會被 YouTube 403，要保持更新）
+opencv-python>=4.8     # 鏡頭運動自檢（motion_check.py）、連續幀拼圖（strip.py）、摳像後處理（matte_clean.py）
+Pillow>=10             # 摳像（matte.py）
+# 可選：換成正式配音後逐字對齊、給原聲找詞的時間（有 NVIDIA 顯示卡會快很多）
+# faster-whisper>=1.0
+# 可選：當事人逐幀摳像（matte.py）。有 NVIDIA 顯示卡裝 GPU 版，沒有就裝 onnxruntime（會慢很多）
+# onnxruntime-gpu[cuda,cudnn]>=1.20
+# rembg>=2.0           # 只用來下載摳像模型：python -c "from rembg import new_session; new_session('isnet-general-use')"

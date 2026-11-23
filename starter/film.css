@@ -1,0 +1,9 @@
+/* 這支片自己的樣式：只放和別的片不一樣的東西。字型、顏色、零件（圓盤、卡片、大數字……）在 lib/kit.css，改風格改那一份。 */
+html,body{margin:0;background:#000;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;background:#06070a;font-family:Mi,'Noto Sans TC','Microsoft JhengHei',sans-serif;color:#fff}
+#stage *{box-sizing:border-box}
+.L{position:absolute}
+.full{position:absolute;inset:0}
+/* 字幕：底部居中一行，MiSans Medium 60px 白字帶柔陰影，盒子頂在 y=936（照原版《AI到底有多燒錢》：字身約 48px 高、上沿 y≈954、下沿 y≈1002，磨了六版定的）；整句短語替換（film_base.js 負責拆句，超過 20 字按逗號拆）；夾在中文裡的英文和數字用 Montserrat 斜體 */
+.sub{position:absolute;left:0;right:0;top:936px;z-index:90;text-align:center;font-family:Mi,'Noto Sans TC',sans-serif;font-weight:500;font-size:60px;letter-spacing:2px;color:#fff;text-shadow:0 2px 6px #000b,0 0 18px #0007}
+.sub .lat{font-family:Mont,Montserrat,sans-serif;font-style:italic;font-weight:600;font-size:.92em;letter-spacing:0;margin:0 .08em}

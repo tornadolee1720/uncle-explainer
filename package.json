@@ -1,0 +1,17 @@
+{
+  "name": "uncle-explainer",
+  "version": "1.0.0",
+  "description": "大叔講清楚：全繁體台灣版直式解讀短片技能（基於 wallstreet-explainer）",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "npx playwright install chromium",
+    "postinstall": "node scripts/get_fonts.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.58.2",
+    "@fontsource/bebas-neue": "^5.2.0",
+    "@fontsource-variable/montserrat": "^5.2.0"
+  },
+  "license": "MIT"
+}

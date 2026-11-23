@@ -12,6 +12,12 @@ on:
       - 'kit/uncle.js'
       - 'tests/news-proof/nvidia_jobs.json'
   workflow_dispatch:
+    inputs:
+      require_fish_voice:
+        description: 'Explicit audio acceptance test; fail without a secure Fish URL secret'
+        required: true
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -83,6 +89,10 @@ jobs:
           UNCLE_FISH_AUDIO_URL: ${{ secrets.UNCLE_FISH_AUDIO_URL }}
         run: |
           if [ -z "$UNCLE_FISH_AUDIO_URL" ]; then
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ inputs.require_fish_voice }}" = "true" ]; then
+              echo "Fish master secret missing: REQUIRED VOICE GATE FAILED"
+              exit 1
+            fi
             echo "Fish master secret missing: VISUAL ONLY passed; no fake synced video."
             exit 0
           fi

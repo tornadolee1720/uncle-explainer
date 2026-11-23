@@ -58,7 +58,7 @@ test('positive: plan selects ten useful scenes, never authorizes publication',()
 });
 test('official screenshot cannot be imaginary or absent',()=>{
  const x=sample();x.inventory.official.verified=false;
- assert.throws(()=>directNews(x),/DIRECTOR_BLOCK.*Official evidence/);
+ assert.throws(()=>directNews(x),/DIRECTOR_BLOCK.*Original publication evidence/);
 });
 test('a NASA clip cannot be represented without historical provenance',()=>{
  const x=sample();x.inventory.motion.nccs_racks.historical_label=false;

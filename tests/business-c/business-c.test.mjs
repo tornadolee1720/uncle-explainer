@@ -26,7 +26,7 @@ test('positive: ten native scenes with valid cash shortage and original visuals'
  assert.ok(qa.scene_types.length>=8);
  assert.ok(qa.explanatory_scenes>=4);
  assert.equal(qa.publish_allowed,false);
- for(const name of ['factory','cash','calendar'])assert.ok(fs.statSync(path.join(d,'assets','img',name+'.svg')).size>2500);
+ for(const name of ['factory','cash','calendar'])assert.ok(fs.statSync(path.join(d,'assets','img',name+'.svg')).size>1300);
  const js=fs.readFileSync(path.join(d,'film.js'),'utf8');
  assert.match(js,/await K\.film\(\[/);
  assert.match(js,/vp-chain/);

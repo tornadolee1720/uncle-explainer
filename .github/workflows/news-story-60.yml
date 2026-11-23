@@ -5,6 +5,8 @@ on:
     paths:
       - '.github/workflows/news-story-60.yml'
       - 'scripts/build_news_story_60.mjs'
+      - 'scripts/director_engine.mjs'
+      - 'tests/director_engine.test.mjs'
       - 'scripts/fetch_news_broll.mjs'
       - 'scripts/fetch_nasa_motion_broll.mjs'
       - 'scripts/assess_news_visuals.mjs'
@@ -33,6 +35,11 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+      - name: Validate Director V1 contract before any external fetch or render
+        run: |
+          node --check scripts/director_engine.mjs
+          node --check scripts/build_news_story_60.mjs
+          node --test tests/director_engine.test.mjs
       - name: Native runtime and fonts
         run: |
           npm ci
@@ -53,6 +60,15 @@ jobs:
       - name: Build cinematic documentary scenes from verified sources
         run: |
           node scripts/build_news_story_60.mjs tests/news-proof/nvidia_jobs.json "$RUNNER_TEMP/news60"
+          node - <<'NODE'
+          const fs=require('node:fs'),p=require('node:path');
+          const d=p.join(process.env.RUNNER_TEMP,'news60');
+          const plan=JSON.parse(fs.readFileSync(p.join(d,'DIRECTOR_PLAN.json')));
+          const m=JSON.parse(fs.readFileSync(p.join(d,'NEWS_MANIFEST.json')));
+          if(plan.summary.status!=='DIRECTOR_PLAN_PASS'||m.director_status!=='DIRECTOR_PLAN_PASS')throw Error('Director plan missing');
+          if(plan.summary.real_video_scenes<2||plan.summary.official_evidence_scenes<1)throw Error('Insufficient editorial media');
+          console.log('DIRECTOR_PLAN_VERIFIED',JSON.stringify(plan.summary));
+          NODE
           node scripts/assess_news_visuals.mjs "$RUNNER_TEMP/news60"
           node scripts/timeline_stub.mjs "$RUNNER_TEMP/news60/script.json"
           node scripts/render.mjs --dir "$RUNNER_TEMP/news60" --check
@@ -116,6 +132,8 @@ jobs:
             ${{ runner.temp }}/news60/out/sheet.png
             ${{ runner.temp }}/news60/out/VISUAL_QA.json
             ${{ runner.temp }}/news60/out/EDITORIAL_QA.json
+            ${{ runner.temp }}/news60/DIRECTOR_PLAN.json
+            ${{ runner.temp }}/news60/DIRECTOR_BRIEF.json
             ${{ runner.temp }}/news60/NEWS_MANIFEST.json
             ${{ runner.temp }}/news60/BROLL_CREDITS.json
             ${{ runner.temp }}/news60/NASA_MOTION_CREDITS.json

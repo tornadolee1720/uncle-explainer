@@ -18,7 +18,7 @@ if(verifiedImage.subarray(0,8).toString('hex')!=='89504e470d0a1a0a')throw Error(
 fs.mkdirSync(path.join(D,'assets','img'),{recursive:true});
 fs.writeFileSync(path.join(D,'assets','img','nvidia_press_real.png'),verifiedImage);
 const broll=JSON.parse(fs.readFileSync(path.join(D,'BROLL_CREDITS.json'),'utf8'));
-if(broll.license!=='CC0 1.0'||broll.original_size_bytes<10000)throw Error('Broll source license not verified');
+if(!['WIKIMEDIA_CC0','NASA_EDITORIAL'].includes(broll.source_kind) || broll.original_size_bytes<10000 || !/^https:\/\/(commons\.wikimedia\.org|www\.nas\.nasa\.gov)\//.test(broll.source_page))throw Error('Broll source provenance invalid');
 const brollPath=path.join(D,broll.local_file);
 if(!fs.existsSync(brollPath) || crypto.createHash('sha256').update(fs.readFileSync(brollPath)).digest('hex')!==broll.sha256)
  throw Error('CC0 photo checksum mismatch');
@@ -44,7 +44,7 @@ const scenes=[
 {scene:'vp-paper',until:'@b03',says:'真實 NVIDIA 原始頁面與來源日期；高亮原文實際文字',img:I,title:'官方財報原文',mast:'NVIDIA Investor Relations',brow:'2026-11-17 / VERIFIED',hl:[hl]},
 {scene:'vp-number',until:'@b04',says:'官方同比成長百分之一百零三',bg:I,title:'跟去年比',value:'103%',unit:'年增',label:'FY27 Q3 總營收 115.8B USD',at:'@b03:成長'},
 {scene:'vp-share',until:'@b05',says:'根據官方 107.6/115.8 計算資料中心營收占比約92.9%',bg:B,value:'92.9%',label:'資料中心占總營收',note:'107.6 ÷ 115.8B USD（推算）',at:'@b04:資料中心'},
-{scene:'vp-photo',until:'@b05:伺服器',says:'展示有授權的真實機櫃照片，清楚標非 NVIDIA 現場',img:B,title:'資料中心硬體',brow:'實景示意 / 非 NVIDIA 機房',source:'Derrick Coetzee / CC0（2011）',tags:[{text:'真正的硬體設備',at:'@b05:晶片'}]},
+{scene:'vp-photo',until:'@b05:伺服器',says:'展示有授權的真實機櫃照片，清楚標非 NVIDIA 現場',img:B,title:'資料中心硬體',brow:'實景示意 / 非 NVIDIA 機房',source:broll.attribution+' / '+(broll.source_kind==='WIKIMEDIA_CC0'?'CC0':'NASA 媒體使用規範'),tags:[{text:'真正的硬體設備',at:'@b05:晶片'}]},
 {scene:'vp-chain',until:'@b07',says:'把抽象雲端服務翻譯成硬體供給流程，示意圖不能當紀錄片實景',bg:B,title:'算力背後的硬體',items:[
  {title:'運算晶片',sub:'處理資料',at:'@b05:晶片'},
  {title:'伺服器',sub:'裝載與運算',at:'@b05:伺服器'},
@@ -76,13 +76,13 @@ voice_state:'MISSING_SECURE_FISH_60_MASTER',may_publish:false,human_review_requi
 evidence:{url:shot.url,sha256:crypto.createHash('sha256').update(verifiedImage).digest('hex'),highlight:hl},
 broll:{source:broll.source_page,author:broll.attribution,license:broll.license,description:broll.depiction,sha256:broll.sha256},
 facts:[{claim:'FY27 Q3 revenue',usd_b:115.8},{claim:'YoY growth',pct:103},{claim:'Data center revenue',usd_b:107.6},{claim:'Data center share (derived)',pct:92.9},{claim:'FY27 Q4 revenue guidance',usd_b:130,estimated:true,band_pct:3}],
-note:'Live official screenshot is real; generic 2011 data-center photo is illustrative, not NVIDIA facility; no stock footage used.'
+note:'Real official NVIDIA screenshot; separate clearly credited historical data-center illustration not NVIDIA facility; no third-party stock footage used.'
 };
 fs.writeFileSync(path.join(D,'NEWS_MANIFEST.json'),JSON.stringify(manifest,null,2)+'\n');
 fs.writeFileSync(path.join(D,'NEWS_SOURCE_CREDITS.md'),
 '# 新聞片來源與製作註記\n\n'+
 '* [NVIDIA 官方財報]('+shot.url+')，2026-11-17，引用數字與截圖供內部評論測試\n'+
-'* [機櫃實景示意]('+broll.source_page+')，'+broll.attribution+'，'+broll.license+'；2011 年的非 NVIDIA 資料中心照片，已做裁切與動畫\n'+
+'* [機櫃實景示意]('+broll.source_page+')，'+broll.attribution+'，'+broll.license+'；'+broll.depiction+'；已做裁切與動畫；不代表 NVIDIA 現場或 NASA 背書\n'+
 '* 資料中心比重：107.6 ÷ 115.8 ≈ 92.9%，為官方數字衍生計算，不是 NVIDIA 單獨公布的比重\n'+
 '* 下一季 130B ±3% 為公司預估，且比一般季度多一週，非實際營收\n');
 console.log(JSON.stringify({status:'10_SHOT_NEWS_STORY_READY',scenes:scenes.length,lines:lines.length,source:shot.url,broll:broll.source_page,voice:'NOT_YET_ATTACHED'}));

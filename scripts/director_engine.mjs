@@ -22,7 +22,15 @@ const TEXT=new Set(['vp-ask','vp-words','vp-list','vp-verdict','v-chapter']);
 const ALLOWED=new Set(Object.values(INTENT_PREFS).flat());
 const fail=(msg)=>{throw new Error('DIRECTOR_BLOCK: '+msg)};
 const refBeat=(s)=>String(s||'').match(/^@(b\d\d)(?::(.+))?$/);
-const isObviousForecast=(scene)=>JSON.stringify(scene).includes('預估')||JSON.stringify(scene).includes('展望')||JSON.stringify(scene).includes('非實績');
+function isObviousForecast(scene){
+ // Assess only what viewers can actually see. A prompt's hidden "says" notes
+ // do NOT establish that the future number is visibly labeled a projection.
+ const visible=scene.scene==='vp-versus'
+  ? [scene.right?.name,scene.right?.sub].join(' ')
+  : [scene.title,scene.label,scene.unit,scene.brow].join(' ');
+ return /預估|展望|預測|非實績/.test(visible) &&
+   !/已經實現|已實現|確定賺到|已入帳|已實現營收/.test(visible);
+}
 function shotClass(scene) {
  if(MOVING.has(scene))return 'real_motion';
  if(PROOF.has(scene))return 'official_evidence';

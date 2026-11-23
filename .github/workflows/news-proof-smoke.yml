@@ -29,6 +29,8 @@ jobs:
           npx playwright install --with-deps chromium
           sudo apt-get update
           sudo apt-get install -y ffmpeg fonts-noto-cjk
+          python -m pip install --quiet fonttools
+          python scripts/prepare_ci_fonts.py
       - name: Fixture test (NOT genuine news)
         run: |
           mkdir -p "$RUNNER_TEMP/fixture"

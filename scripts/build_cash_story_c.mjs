@@ -32,14 +32,16 @@ const validTypes=new Set(['vp-ask','vp-photo','vp-timeline','vp-number','vp-bars
 let decision=[];
 for(let i=0;i<scenes.length;i++){
  const sc=scenes[i],b=C.script[i];
+ if(i<scenes.length-1)sc.until='@b'+String(i+2).padStart(2,'0');
  need(b.id==='b'+String(i+1).padStart(2,'0')&&b.viewer_gain?.length>12,'Missing intent/understanding contract');
  need(validTypes.has(sc.scene)&&sc.says?.length>=12,'Unsupported scene or missing explanation');
- function walk(v){
+ function walk(v,field=''){
   if(typeof v==='string'&&v.startsWith('@')){
    const m=v.match(/^@(b\d\d)(?::(.+))?$/);
-   need(m&&m[1]===b.id&&(!m[2]||b.text.includes(m[2])),'Invalid beat anchor '+v);
-  }else if(Array.isArray(v))v.forEach(walk);
-  else if(v&&typeof v==='object')for(const [k,t] of Object.entries(v))if(k!=='says')walk(t);
+   const expected=field==='until'?'b'+String(i+2).padStart(2,'0'):b.id;
+   need(m&&m[1]===expected&&(!m[2]||b.text.includes(m[2])),'Invalid beat anchor '+v);
+  }else if(Array.isArray(v))v.forEach(x=>walk(x,field));
+  else if(v&&typeof v==='object')for(const [k,t] of Object.entries(v))if(k!=='says')walk(t,k);
  }
  walk(sc);
  decision.push({beat_id:b.id,intent:intents[i],viewer_gain:b.viewer_gain,choice:sc.scene,

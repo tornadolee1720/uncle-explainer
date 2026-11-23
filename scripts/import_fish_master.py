@@ -41,7 +41,14 @@ def main():
     cc=OpenCC('s2t')
     duration=probe_duration(master)
     model=WhisperModel(args.whisper_model,device='cpu',compute_type='int8',cpu_threads=4)
-    segments,info=model.transcribe(str(master),language='zh',word_timestamps=True,
+    # Use the already tested FFmpeg decoder instead of PyAV's version-sensitive
+    # metadata_errors argument (new PyAV builds may reject it).
+    import numpy as np
+    pcm=subprocess.run(['ffmpeg','-v','error','-i',str(master),'-ac','1','-ar','16000','-f','f32le','-'],
+                       check=True,capture_output=True).stdout
+    if len(pcm)<32000:raise SystemExit('Decoded Fish master is too short')
+    waveform=np.frombuffer(pcm,dtype=np.float32)
+    segments,info=model.transcribe(waveform,language='zh',word_timestamps=True,
            beam_size=5,condition_on_previous_text=False,vad_filter=False)
     recognized=[]
     for segment in segments:

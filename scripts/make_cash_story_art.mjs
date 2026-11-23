@@ -55,6 +55,8 @@ const calendar=[
  '</g>'].join('');
 for(const [name,art,caption] of [['factory',factory,'包裝工廠示意'],['cash',cash,'現金與帳單示意'],['calendar',calendar,'付款日期示意']]){
  const dest=path.join(out,name+'.svg');fs.writeFileSync(dest,shell(art,caption));
- const size=fs.statSync(dest).size;if(size<2500)throw Error('SVG generator incomplete: '+name);
+ const xml=fs.readFileSync(dest,'utf8');
+ const size=Buffer.byteLength(xml,'utf8');
+ if(size<1300||!xml.startsWith('<svg ')||!xml.includes('viewBox="0 0 1080 1920"')||!xml.endsWith('</svg>'))throw Error('SVG structure invalid: '+name);
  console.log('ORIGINAL_SVG '+name+' '+size+' bytes');
 }

@@ -27,6 +27,8 @@ function isObviousForecast(scene){
  // do NOT establish that the future number is visibly labeled a projection.
  const visible=scene.scene==='vp-versus'
   ? [scene.right?.name,scene.right?.sub].join(' ')
+  : scene.scene==='vp-words'
+  ? (scene.words||[]).map(w=>w.text).join(' ')
   : [scene.title,scene.label,scene.unit,scene.brow].join(' ');
  return /預估|展望|預測|非實績/.test(visible) &&
    !/已經實現|已實現|確定賺到|已入帳|已實現營收/.test(visible);

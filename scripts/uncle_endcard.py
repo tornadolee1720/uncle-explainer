@@ -28,7 +28,12 @@ def find_font(weight):
 def font(path, size, ttc_tc=True):
     # NotoSansCJK 的 .ttc 裡 TC 是第 2 個（index 2）
     idx = 2 if path.lower().endswith('.ttc') else 0
-    return ImageFont.truetype(path, size, index=idx)
+    f = ImageFont.truetype(path, size, index=idx)
+    try:  # CI 的 Noto Sans TC 是可變字型，預設 Thin；依檔名套用正確字重
+        f.set_variation_by_name('Black' if 'Black' in os.path.basename(path) else 'Medium')
+    except Exception:
+        pass
+    return f
 
 
 def card(line, fblack, fmed):

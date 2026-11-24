@@ -45,10 +45,10 @@ const scenes = [
   {scene: 'vp-versus', says: '兩把尺對照負零點二五度與負零點五度門檻，說明不能接成一條線', title: '尺不一樣', brow: '近視定義門檻', left: {name: '早年門檻', value: '−0.25 D', sub: '1986–2006', at: '@b04:早年'}, right: {name: '後來門檻', value: '−0.50 D', sub: '2010・2017', at: '@b04:後來'}, bg: bg.ref},
   {scene: 'vp-bars', says: '同一門檻負零點五度下兩個調查年點，明說不是逐年資料', title: '同一把尺 −0.50 D｜小六', brow: '兩個調查年，非逐年｜' + tag(same[0].claim_id), unit: '% 小六近視率', items: [{label: '2010', value: fmt(same[0]), at: '@b05:二零一零'}, {label: '2017', value: fmt(same[1]), hl: true, at: '@b05:二零一七'}], bg: bg.ref},
   {scene: 'vp-words', says: '切換到第二組全國資料，把視力不良四字放大並與近視度數切開', words: [{text: '裸眼視力篩檢', at: '@b06:裸眼'}, {text: '視力不良≠近視', at: '@b06:不是近視', col: 'accent'}], bg: bg.scr},
-  {scene: 'vp-line', says: '近十年國小裸眼視力不良率逐學年度走勢，標母體學年度與來源', title: '國小裸眼視力不良率', brow: '全國國小｜學年度 103–113｜' + tag(screen[0].claim_id), unit: '%', down: true, data: screen.map(c => c.value), marks: [{i: 0, text: '103學年 ' + fmt(screen[0]) + '%', at: '@b07:二零一四'}, {i: -1, text: '113學年 ' + fmt(screen.at(-1)) + '%', at: '@b07:二零二四'}], source: '縱軸放大（約 44–48%）｜主計總處年鑑候選值｜' + (dup.length ? dup.join('、') + ' 同值待回核' : '逐年核對'), bg: bg.scr},
+  {scene: 'vp-line', says: '近十年國小裸眼視力不良率逐學年度走勢，標母體學年度與來源', title: '國小裸眼視力不良率', brow: '全國國小｜學年度 103–113｜' + tag(screen[0].claim_id), unit: '%', down: true, data: screen.map(c => c.value), marks: [{i: 0, text: '103學年 ' + fmt(screen[0]) + '%', at: '@b07:二零一四'}, {i: -1, text: '113學年 ' + fmt(screen.at(-1)) + '%', at: '@b07:二零二四'}], source: '教育部國中小概況統計 表2-4｜110–112 依原表同值', bg: bg.scr, _replace: 'decade'},
   {scene: 'vp-versus', says: '兩條趨勢分開兩把尺並標出不是同一個指標，禁止同一縱軸比較', title: '不是同一個指標', left: {name: '近視調查', value: '驗光', sub: '屈光度數', at: '@b08:往上'}, right: {name: '學校篩檢', value: '視力表', sub: '裸眼視力', at: '@b08:往下'}, bg: bg.ref, _replace: 'dualtrack'},
   {scene: 'vp-list', says: '二零二二年報導數字未核對原始報告前，不能宣稱近視已經下降', title: '新聞數字先別急著用', items: [{text: '2022 新調查', sub: '媒體報導', mark: '1', at: '@b09:二零二二'}, {text: '原始報告與方法', sub: '尚未核對', mark: 'no', at: '@b09:原始報告'}, {text: '不能說近視下降', sub: '證據不足', mark: 'no', hl: true, at: '@b09:不能說'}], bg: bg.scr},
-  {scene: 'vp-verdict', says: '家長能帶走的結論：篩檢只是提醒，持續追蹤才知道變化', lines: ['篩檢是提醒', '追蹤才知道'], at: ['@b10:提醒', '@b10:追蹤'], hero: true, sub: '非醫療診斷｜' + (MODE === 'INTERNAL_SAMPLE' ? '研究審核中' : '資料已核實'), bg: bg.cls}
+  {scene: 'vp-verdict', says: '家長能帶走的結論：篩檢只是提醒，持續追蹤才知道變化', lines: ['篩檢是提醒', '追蹤才知道'], at: ['@b10:提醒', '@b10:追蹤'], hero: true, bg: bg.cls}
 ];
 const decisions = [];
 for (let i = 0; i < scenes.length; i++) {

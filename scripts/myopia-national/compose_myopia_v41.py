@@ -157,6 +157,37 @@ def dualtrack(t, T, beat, claims):
     subtitle(im, beat, beat['_t0'] + t)
     return im
 
+def decade(t, T, beat, claims):
+    """School screening 103-113 on a fixed 0-100% axis (no zoom), verified values only, source on screen."""
+    im = bg(); d = ImageDraw.Draw(im, 'RGBA'); p = t / T
+    screen = sorted([c for c in claims if c['claim_id'].startswith('school_screen_')], key=lambda c: c['calendar_year'])
+    d.text((40, 150), '國小裸眼視力不良率', font=font(52), fill=PAPER)
+    ok = all(c['verification_state'] == 'verified' for c in screen)
+    chip(d, (40, 222), ('已核實' if ok else '待核實') + '｜全國國小・學年度 103–113', font(24))
+    x0, x1, y0, y1 = 110, W - 50, 330, 820
+    d.rounded_rectangle([40, 300, W - 30, 880], 20, fill=(14, 24, 38, 230), outline=AMBER, width=4)
+    for v in (0, 25, 50, 75, 100):
+        yy = y1 - (y1 - y0) * v / 100
+        d.line([(x0, yy), (x1, yy)], fill=(255, 255, 255, 40), width=2); d.text((50, yy - 14), f'{v}%', font=font(22, 'Medium'), fill=GREY)
+    n = len(screen); g = ease((p - .08) / .55); m = max(1, int(g * (n - 1)) + 1)
+    pts = [(x0 + 20 + (x1 - x0 - 40) * i / (n - 1), y1 - (y1 - y0) * c['value'] / 100) for i, c in enumerate(screen)]
+    for i in range(m):
+        bh = (y1 - pts[i][1]); d.rectangle([pts[i][0] - 14, y1 - bh, pts[i][0] + 14, y1], fill=AMBER + (90,))
+    if m > 1: d.line(pts[:m], fill=AMBER, width=7, joint='curve')
+    for i in range(m):
+        d.ellipse([pts[i][0] - 7, pts[i][1] - 7, pts[i][0] + 7, pts[i][1] + 7], fill=PAPER)
+        if i in (0, n - 1):
+            lbl = f"{screen[i]['value']}%"; d.text((pts[i][0] - (20 if i == 0 else 90), pts[i][1] + (-50 if i == 0 else 18)), lbl, font=font(26), fill=PAPER)
+        if i % 2 == 0: d.text((pts[i][0] - 18, y1 + 10), str(103 + i), font=font(20, 'Medium'), fill=GREY)
+    if m >= 10 and p > .7:
+        k = ease((p - .7) / .1); a, b = pts[7], pts[9]
+        tx = '110–112 依原表同值'; tw = d.textlength(tx, font=font(20)); x0 = min(a[0] - 20, W - 60 - tw)
+        d.rounded_rectangle([x0, a[1] - 92, x0 + tw + 24, a[1] - 56], 10, fill=YEL + (int(230 * k),))
+        d.text((x0 + 12, a[1] - 90), tx, font=font(20), fill=NAVY)
+    d.text((50, 890), '資料：教育部《113學年度國民中小學校概況統計》表2-4', font=font(20, 'Medium'), fill=GREY)
+    subtitle(im, beat, beat['_t0'] + t)
+    return im
+
 def draw_shot(fn, n, beat, claims, dest):
     argv = ['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', f'{W}x{H}', '-r', '30',
             '-i', 'pipe:0', '-an', '-vf', 'format=yuv420p', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-r', '30', str(dest)]
@@ -188,6 +219,7 @@ def main():
     ap.add_argument('--film-dir', type=Path, required=True)
     ap.add_argument('--audit', type=Path, default=Path('tests/myopia-national/EVIDENCE_AUDIT.json'))
     ap.add_argument('--output', type=Path, required=True)
+    ap.add_argument('--voice-label', default='無聲測試版｜尚未匯入 Fish 正式配音')
     a = ap.parse_args(); D = a.film_dir.resolve(); out = a.output.resolve(); root = out.parent; root.mkdir(parents=True, exist_ok=True)
     T = json.loads((D / 'timeline.json').read_text(encoding='utf8')); R = json.loads((D / 'MYOPIA_DIRECTOR.json').read_text(encoding='utf8'))
     A = json.loads(a.audit.read_text(encoding='utf8')); claims = A['claims']
@@ -196,7 +228,7 @@ def main():
     native = D / 'out' / 'visual_720.mp4'; N = nframes(native)
     if abs(N / FPS - T['duration']) > .2: raise RuntimeError('native duration mismatch')
     st = [round(b['start'] * FPS) for b in beats]; st[0] = 0; bounds = st + [N]
-    rep = {R['replace_shots']['classroom']: classroom, R['replace_shots']['dualtrack']: dualtrack}
+    rep = {R['replace_shots']['classroom']: classroom, R['replace_shots']['decade']: decade, R['replace_shots']['dualtrack']: dualtrack}
     segs = []
     for i in range(10):
         a0, a1 = bounds[i], bounds[i + 1]; f = root / f'seg_{i + 1:02}.mp4'
@@ -209,7 +241,7 @@ def main():
     call(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', lst, '-an', '-c', 'copy', joined])
     wm_needed = R['watermark_required'] or A['summary']['verified'] < A['summary']['total']
     wm = root / 'watermark.png'
-    watermark(wm, [R['watermark'] if wm_needed else '資料已核實・內部審片', '無聲測試版｜尚未匯入 Fish 正式配音'])
+    watermark(wm, [R['watermark'] if wm_needed else '資料已核實・內部審片', a.voice_label])
     call(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-i', joined, '-i', wm, '-filter_complex', '[0:v][1:v]overlay=0:0,format=yuv420p',
           '-an', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20', '-r', '30', '-movflags', '+faststart', out])
     fn = nframes(out)

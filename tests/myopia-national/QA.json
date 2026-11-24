@@ -4,42 +4,34 @@
   "branch": "experiment/taiwan-myopia-national-20261124",
   "render_verified": true,
   "render_detail": {
-    "status": "MYOPIA_V41_SILENT_COMPOSITE_PASS",
-    "frames": 2912,
-    "native_frames": 2912,
-    "duration_seconds": 97.067,
-    "format": "H264 720x1280 30fps, no audio",
-    "native_shots_kept": 8,
+    "final": "1080x1920 H264+AAC 30fps，70.9 秒（含 1.5 秒品牌結尾卡）",
+    "loudness": "-15.9 LUFS",
+    "native_shots": 7,
     "original_animation_shots": [
       2,
+      7,
       8
-    ],
-    "original_animation_frames": {
-      "2": 277,
-      "8": 306
-    },
-    "watermark_burned": true,
-    "subtitles": "vpro native in 8 shots; Pillow-drawn in shots 2 and 8 (time-proportional, not ASR)"
+    ]
   },
   "vpro_check": "PASS（剩 1 條提醒：全片無 props 道具）",
   "vpro_sheet": "PASS",
   "data_verified": false,
-  "data_detail": "41 筆 claim 全部 pending；原始 PDF 未能在製作環境開啟，見 EVIDENCE_AUDIT.json",
-  "fish_voice_embedded": false,
-  "audio": "無聲。時間線用 SYNTHETIC_TEST_TONE_NOT_FISH 估句長，未混入成片",
+  "data_detail": "11/41 verified：學校篩檢 103–113 依教育部表2-4（第8頁）核實，113 學年改為 44.83；近視調查 1986/2000/2010/2017 與 2022 報導仍 pending",
+  "fish_voice_embedded": true,
+  "audio": "Fish taiwan_ad_male 逐句 10 段（SHA256 見 FISH_VOICE_MANIFEST.json），句長對齊、字級時間為估算非 ASR；原創合成 pad BGM 約低於人聲 10 dB",
   "watermark_burned": true,
-  "brand_end_card_attached": false,
+  "brand_end_card_attached": true,
   "human_medical_review_required": true,
   "publish_allowed": false,
-  "status": "INTERNAL_STORYBOARD_SAMPLE_ONLY｜不是衛教成片",
+  "status": "INTERNAL_VOICED_SAMPLE｜近視調查未核實，不是可發布衛教成片",
   "open_items": [
-    "逐筆回查原始調查報告與教育部/主計總處表格頁碼，把 verified 寫回 EVIDENCE_AUDIT.json",
-    "確認 110–112 學年度數值",
-    "確認 2010 兩種門檻與 2017 調查設計",
-    "Fish taiwan_ad_male 正式配音後重算時間線",
-    "第 7 鏡縱軸放大的呈現方式（改 0–100% 或保留並加註）",
-    "第 10 鏡底部小字被品牌徽章遮住",
-    "加上固定目鏡大叔品牌結尾卡",
+    "回查國健署原始近視調查（1986/2000/2010/2017 小六數字、門檻、是否散瞳、頁碼）；製作時網頁讀取未獲核准",
+    "2022 調查原始報告",
+    "人工聽一遍 10 段配音：讀音、順序、數字（例：負零點二五度、四十四點八三）",
+    "b07 旁白「二零一四學年度」對應民國 103 學年度，請確認口語是否改說「103 學年度」",
+    "結尾口白要用目鏡大叔本人聲（uncle_host）或維持無口白",
+    "BGM 為合成 pad，正式版可換配樂",
     "驗光師／醫事審稿"
-  ]
+  ],
+  "brand_end_card_note": "結尾卡無「我是驗光師，目鏡大叔」口白：taiwan_ad_male 不是使用者本人聲音，聲線登錄禁止冒充使用者"
 }

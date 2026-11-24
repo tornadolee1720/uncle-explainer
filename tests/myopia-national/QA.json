@@ -1,0 +1,45 @@
+{
+  "project": "台灣學童近視：近十年全國資料｜V4.1 實驗",
+  "date": "2026-11-24",
+  "branch": "experiment/taiwan-myopia-national-20261124",
+  "render_verified": true,
+  "render_detail": {
+    "status": "MYOPIA_V41_SILENT_COMPOSITE_PASS",
+    "frames": 2912,
+    "native_frames": 2912,
+    "duration_seconds": 97.067,
+    "format": "H264 720x1280 30fps, no audio",
+    "native_shots_kept": 8,
+    "original_animation_shots": [
+      2,
+      8
+    ],
+    "original_animation_frames": {
+      "2": 277,
+      "8": 306
+    },
+    "watermark_burned": true,
+    "subtitles": "vpro native in 8 shots; Pillow-drawn in shots 2 and 8 (time-proportional, not ASR)"
+  },
+  "vpro_check": "PASS（剩 1 條提醒：全片無 props 道具）",
+  "vpro_sheet": "PASS",
+  "data_verified": false,
+  "data_detail": "41 筆 claim 全部 pending；原始 PDF 未能在製作環境開啟，見 EVIDENCE_AUDIT.json",
+  "fish_voice_embedded": false,
+  "audio": "無聲。時間線用 SYNTHETIC_TEST_TONE_NOT_FISH 估句長，未混入成片",
+  "watermark_burned": true,
+  "brand_end_card_attached": false,
+  "human_medical_review_required": true,
+  "publish_allowed": false,
+  "status": "INTERNAL_STORYBOARD_SAMPLE_ONLY｜不是衛教成片",
+  "open_items": [
+    "逐筆回查原始調查報告與教育部/主計總處表格頁碼，把 verified 寫回 EVIDENCE_AUDIT.json",
+    "確認 110–112 學年度數值",
+    "確認 2010 兩種門檻與 2017 調查設計",
+    "Fish taiwan_ad_male 正式配音後重算時間線",
+    "第 7 鏡縱軸放大的呈現方式（改 0–100% 或保留並加註）",
+    "第 10 鏡底部小字被品牌徽章遮住",
+    "加上固定目鏡大叔品牌結尾卡",
+    "驗光師／醫事審稿"
+  ]
+}

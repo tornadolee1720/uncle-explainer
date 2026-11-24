@@ -1,0 +1,86 @@
+name: Myopia national V4.1 silent storyboard (internal)
+on:
+  push:
+    branches:
+      - experiment/taiwan-myopia-national-20261124
+    paths:
+      - '.github/workflows/myopia-national-v41.yml'
+      - 'scripts/build_myopia_national.mjs'
+      - 'scripts/make_myopia_art.mjs'
+      - 'scripts/myopia-national/**'
+      - 'tests/myopia-national/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  myopia-v41:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Setup
+        run: |
+          npm ci
+          npx playwright install chromium
+          node scripts/prepare_ci_fonts_fast.mjs
+          npm install --no-save --no-package-lock @ffmpeg-installer/linux-x64 @ffprobe-installer/linux-x64
+          echo "$PWD/node_modules/@ffmpeg-installer/linux-x64" >> "$GITHUB_PATH"
+          echo "$PWD/node_modules/@ffprobe-installer/linux-x64" >> "$GITHUB_PATH"
+          python -m pip install --quiet Pillow numpy
+      - name: Node tests (evidence gate fails closed)
+        run: node --test tests/myopia-national/gate.test.mjs
+      - name: Build film, test-tone timeline (NOT Fish)
+        run: |
+          F="$RUNNER_TEMP/myo"
+          node scripts/new_film.mjs "$F" --vertical
+          node scripts/make_myopia_art.mjs "$F"
+          node scripts/build_myopia_national.mjs tests/myopia-national "$F"
+          python scripts/business-c-v4/native_voice_timeline.py --film-dir "$F" --test-tones
+      - name: Native vpro render --check / --sheet / --video
+        run: |
+          F="$RUNNER_TEMP/myo"
+          node scripts/render.mjs --dir "$F" --check
+          node scripts/render.mjs --dir "$F" --sheet
+          node scripts/render.mjs --dir "$F" --video --h 720
+      - name: Compose original animation shots 2 and 8 + watermark
+        run: python scripts/myopia-national/compose_myopia_v41.py --film-dir "$RUNNER_TEMP/myo" --output "$RUNNER_TEMP/myo/out/MYOPIA_V41_silent_internal.mp4"
+      - name: ffprobe format + evidence gate
+        run: |
+          python - <<'PY'
+          import json,os,subprocess
+          from pathlib import Path
+          d=Path(os.environ['RUNNER_TEMP'])/'myo'
+          m=d/'out'/'MYOPIA_V41_silent_internal.mp4'
+          info=json.loads(subprocess.run(['ffprobe','-v','error','-show_streams','-show_format','-of','json',str(m)],capture_output=True,text=True,check=True).stdout)
+          v=[s for s in info['streams'] if s['codec_type']=='video'];a=[s for s in info['streams'] if s['codec_type']=='audio']
+          if len(v)!=1 or a or v[0]['codec_name']!='h264':raise SystemExit('Must be silent H264')
+          if (v[0]['width'],v[0]['height'],v[0]['r_frame_rate'])!=(720,1280,'30/1'):raise SystemExit('Not 9:16 720x1280 30fps')
+          t=json.loads((d/'timeline.json').read_text());sec=float(info['format']['duration'])
+          if abs(sec-t['duration'])>.2:raise SystemExit('Duration drift')
+          A=json.loads(Path('tests/myopia-national/EVIDENCE_AUDIT.json').read_text())
+          R=json.loads((d/'MYOPIA_DIRECTOR.json').read_text());C=json.loads((d/'out'/'COMPOSITE_QA.json').read_text())
+          Q=json.loads(Path('tests/myopia-national/QA.json').read_text())
+          if A['summary']['verified']<A['summary']['total'] and not (R['watermark_required'] and C['watermark_burned']):raise SystemExit('Unverified data without watermark')
+          if Q['publish_allowed'] or Q['fish_voice_embedded'] or not Q['human_medical_review_required']:raise SystemExit('QA mislabeled')
+          if Q['data_verified'] and A['summary']['verified']<A['summary']['total']:raise SystemExit('data_verified overclaimed')
+          print('MYOPIA_V41_PASS',round(sec,2),R['mode'])
+          PY
+      - name: Upload internal artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: myopia-v41-internal-${{ github.run_number }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/myo/out/sheet.png
+            ${{ runner.temp }}/myo/out/MYOPIA_V41_silent_internal.mp4
+            ${{ runner.temp }}/myo/out/COMPOSITE_QA.json
+            ${{ runner.temp }}/myo/MYOPIA_DIRECTOR.json
+            tests/myopia-national/QA.json
+            tests/myopia-national/EVIDENCE_AUDIT.json
+            tests/myopia-national/DIRECTOR.md

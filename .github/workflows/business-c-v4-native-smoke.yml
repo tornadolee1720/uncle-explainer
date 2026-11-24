@@ -26,6 +26,10 @@ jobs:
           npm ci
           npx playwright install chromium
           node scripts/prepare_ci_fonts_fast.mjs
+          npm install --no-save --no-package-lock @ffmpeg-installer/linux-x64 @ffprobe-installer/linux-x64
+          echo "$PWD/node_modules/@ffmpeg-installer/linux-x64" >> "$GITHUB_PATH"
+          echo "$PWD/node_modules/@ffprobe-installer/linux-x64" >> "$GITHUB_PATH"
+          node_modules/@ffmpeg-installer/linux-x64/ffmpeg -hide_banner -encoders | grep libx264
           node scripts/new_film.mjs "$RUNNER_TEMP/c-v4-native" --vertical
           node scripts/make_cash_story_art.mjs "$RUNNER_TEMP/c-v4-native"
           node scripts/build_cash_story_c.mjs tests/business-c/case.json "$RUNNER_TEMP/c-v4-native"

@@ -1,0 +1,198 @@
+{
+  "project": "Uncle Explainer V4.1 national myopia research",
+  "date": "2026-11-24",
+  "status": "DATA_AND_DRAFT_ONLY_NOT_RENDERED",
+  "publish_allowed": false,
+  "survey_myopia": [
+    {
+      "year": 1986,
+      "myopia_threshold_D": -0.25,
+      "grade1": 3,
+      "grade6": 27.5,
+      "grade9": 61.6,
+      "grade12": 76.3
+    },
+    {
+      "year": 1990,
+      "myopia_threshold_D": -0.25,
+      "grade1": 6.5,
+      "grade6": 35.2,
+      "grade9": 74,
+      "grade12": 75.2
+    },
+    {
+      "year": 1995,
+      "myopia_threshold_D": -0.25,
+      "grade1": 12.8,
+      "grade6": 55.8,
+      "grade9": 76.4,
+      "grade12": 84.1
+    },
+    {
+      "year": 2000,
+      "myopia_threshold_D": -0.25,
+      "grade1": 20.4,
+      "grade6": 60.6,
+      "grade9": 80.7,
+      "grade12": 84.2
+    },
+    {
+      "year": 2006,
+      "myopia_threshold_D": -0.25,
+      "grade1": 19.6,
+      "grade6": 61.8,
+      "grade9": 77.1,
+      "grade12": 85.1
+    },
+    {
+      "year": 2010,
+      "myopia_threshold_D": -0.25,
+      "grade1": 21.5,
+      "grade6": 65.9,
+      "grade9": null,
+      "grade12": null
+    },
+    {
+      "year": 2010,
+      "myopia_threshold_D": -0.5,
+      "grade1": 17.9,
+      "grade6": 62,
+      "grade9": null,
+      "grade12": null
+    },
+    {
+      "year": 2017,
+      "myopia_threshold_D": -0.5,
+      "grade1": 19.8,
+      "grade6": 70.6,
+      "grade9": 89.3,
+      "grade12": 87.2
+    }
+  ],
+  "annual_school_vision_failure": [
+    {
+      "school_year_roc": 103,
+      "school_year_start": 2014,
+      "elementary_visual_screen_failure_pct": 47.05
+    },
+    {
+      "school_year_roc": 104,
+      "school_year_start": 2015,
+      "elementary_visual_screen_failure_pct": 46.12
+    },
+    {
+      "school_year_roc": 105,
+      "school_year_start": 2016,
+      "elementary_visual_screen_failure_pct": 45.86
+    },
+    {
+      "school_year_roc": 106,
+      "school_year_start": 2017,
+      "elementary_visual_screen_failure_pct": 45.48
+    },
+    {
+      "school_year_roc": 107,
+      "school_year_start": 2018,
+      "elementary_visual_screen_failure_pct": 44.79
+    },
+    {
+      "school_year_roc": 108,
+      "school_year_start": 2019,
+      "elementary_visual_screen_failure_pct": 44.35
+    },
+    {
+      "school_year_roc": 109,
+      "school_year_start": 2020,
+      "elementary_visual_screen_failure_pct": 44.6
+    },
+    {
+      "school_year_roc": 110,
+      "school_year_start": 2021,
+      "elementary_visual_screen_failure_pct": 45.23
+    },
+    {
+      "school_year_roc": 111,
+      "school_year_start": 2022,
+      "elementary_visual_screen_failure_pct": 45.23
+    },
+    {
+      "school_year_roc": 112,
+      "school_year_start": 2023,
+      "elementary_visual_screen_failure_pct": 45.23
+    },
+    {
+      "school_year_roc": 113,
+      "school_year_start": 2024,
+      "elementary_visual_screen_failure_pct": 44.85
+    }
+  ],
+  "reported_2022": {
+    "survey_year": 2022,
+    "kindergarten_last_pct": 3.78,
+    "grade6_pct": 62.66,
+    "source": "CNA 2024-03-04",
+    "primary_report_verified": false,
+    "warning": "Do not plot as comparable trend until definition and design confirmed."
+  },
+  "script": [
+    {
+      "id": "b01",
+      "text": "台灣孩子的近視，這十年到底變好，還是變嚴重？為什麼兩份全國數字看起來完全不同？",
+      "gap": 0.3
+    },
+    {
+      "id": "b02",
+      "text": "先看真正的近視調查。一九八六年，小一近視率百分之三，小六是百分之二十七點五。",
+      "gap": 0.3
+    },
+    {
+      "id": "b03",
+      "text": "到了兩千年，小一已經是百分之二十點四，小六是百分之六十點六。",
+      "gap": 0.3
+    },
+    {
+      "id": "b04",
+      "text": "但注意，早年的近視門檻是二十五度，後來常用的是五十度，不能直接把數字串成一條線。",
+      "gap": 0.3
+    },
+    {
+      "id": "b05",
+      "text": "同樣用五十度門檻，二零一零年小六近視率百分之六十二，二零一七年是百分之七十點六。",
+      "gap": 0.3
+    },
+    {
+      "id": "b06",
+      "text": "再看另一條全國資料：學校每年做的裸眼視力篩檢。",
+      "gap": 0.3
+    },
+    {
+      "id": "b07",
+      "text": "二零一四學年度，國小視力不良率百分之四十七點零五；二零二四學年度是百分之四十四點八五。",
+      "gap": 0.3
+    },
+    {
+      "id": "b08",
+      "text": "數字下降，能說近視也下降嗎？不行。裸眼視力不良，和散瞳驗光確認的近視，不是同一件事。",
+      "gap": 0.3
+    },
+    {
+      "id": "b09",
+      "text": "還有二零二二年的近視調查被媒體報導，但要核對測量方法，才適合跟舊資料放在一起。",
+      "gap": 0.3
+    },
+    {
+      "id": "b10",
+      "text": "真正該問的不是孩子今天看不看得到，而是我們有沒有及早追蹤他眼睛的變化。",
+      "gap": 0.3
+    }
+  ],
+  "voice": "FISH_AD_MALE_PENDING_NOT_GENERATED",
+  "must_not_equate_vision_screening_with_myopia": true,
+  "sources": [
+    "https://health99.hpa.gov.tw/storage/pdf/materials/22176.pdf",
+    "https://www.hpa.gov.tw/Pages/List.aspx?nodeid=45",
+    "https://ws.dgbas.gov.tw/001/Upload/466/relfile/11503/235319/yearbook113.pdf",
+    "https://www.ntpc.edu.tw/uploaddowndoc?dis=edudata2&file=edudata2%2F202508201641081.pdf&filedisplay=新北市113學年度國中小學校學生視力概況.pdf&flag=doc",
+    "https://www.cna.com.tw/news/ahel/202403040261.aspx"
+  ]
+}

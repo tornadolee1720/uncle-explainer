@@ -105,7 +105,7 @@ def classroom(t, T, beat, claims):
         d.text((x0 + 24, 522), name, font=font(46), fill=NAVY); d.text((x0 + 24, 600), sub, font=font(28, 'Medium'), fill=NAVY)
     kh = ease((p - .72) / .1)
     if kh > 0:
-        f = font(54); s = '兩種全國數字'; w = d.textlength(s, font=f)
+        f = font(54); s = '兩組全國數字'; w = d.textlength(s, font=f)
         d.text(((W - w) / 2, 300 - 20 * (1 - kh)), s, font=f, fill=YEL + (int(255 * kh),))
     subtitle(im, beat, beat['_t0'] + t)
     return im

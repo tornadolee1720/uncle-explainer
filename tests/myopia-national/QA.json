@@ -4,7 +4,7 @@
   "branch": "experiment/taiwan-myopia-national-20261124",
   "render_verified": true,
   "render_detail": {
-    "final": "1080x1920 H264+AAC 30fps，70.9 秒（含 1.5 秒品牌結尾卡）",
+    "final": "1080x1920 H264+AAC 30fps，75.5 秒（含 1.5 秒品牌結尾卡）",
     "loudness": "-15.9 LUFS",
     "native_shots": 7,
     "original_animation_shots": [
@@ -18,7 +18,7 @@
   "data_verified": false,
   "data_detail": "11/41 verified：學校篩檢 103–113 依教育部表2-4（第8頁）核實，113 學年改為 44.83；近視調查 1986/2000/2010/2017 與 2022 報導仍 pending",
   "fish_voice_embedded": true,
-  "audio": "Fish taiwan_ad_male 逐句 10 段（SHA256 見 FISH_VOICE_MANIFEST.json），句長對齊、字級時間為估算非 ASR；原創合成 pad BGM 約低於人聲 10 dB",
+  "audio": "Fish taiwan_ad_male 逐句 10 段（台灣口語改寫、避開破音字；SHA256 見 FISH_VOICE_MANIFEST.json），句長對齊、字級時間為估算非 ASR；原創合成 pad BGM 約低於人聲 10 dB",
   "watermark_burned": true,
   "brand_end_card_attached": true,
   "human_medical_review_required": true,
@@ -28,7 +28,6 @@
     "回查國健署原始近視調查（1986/2000/2010/2017 小六數字、門檻、是否散瞳、頁碼）；製作時網頁讀取未獲核准",
     "2022 調查原始報告",
     "人工聽一遍 10 段配音：讀音、順序、數字（例：負零點二五度、四十四點八三）",
-    "b07 旁白「二零一四學年度」對應民國 103 學年度，請確認口語是否改說「103 學年度」",
     "結尾口白要用目鏡大叔本人聲（uncle_host）或維持無口白",
     "BGM 為合成 pad，正式版可換配樂",
     "驗光師／醫事審稿"

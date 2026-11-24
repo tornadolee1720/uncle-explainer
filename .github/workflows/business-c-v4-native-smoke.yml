@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/business-c-v4-native-smoke.yml'
       - 'scripts/business-c-v4/**'
+      - 'scripts/business-c-v3/illustrate_v2.py'
       - 'scripts/build_cash_story_c.mjs'
       - 'tests/business-c/case.json'
   workflow_dispatch:
@@ -66,6 +67,27 @@ jobs:
           if abs(seconds-t['duration'])>.20:raise SystemExit('Voice-driven native vpro duration drift')
           print('NATIVE_VPRO_AUDIO_TIMELINE_FULL_VIDEO_PASS',round(seconds,3),t['duration'])
           PY
+      - name: Compose illustrated business story using physical voice timeline
+        run: |
+          python -m pip install --quiet Pillow numpy
+          python scripts/business-c-v4/compose_voice_first_story.py \
+            --native-video "$RUNNER_TEMP/c-v4-native/out/visual_720.mp4" \
+            --timeline "$RUNNER_TEMP/c-v4-native/timeline.json" \
+            --art-source "scripts/business-c-v3/illustrate_v2.py" \
+            --output "$RUNNER_TEMP/c-v4-native/out/V4_1_story_audio_first_silent.mp4"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=Path(os.environ['RUNNER_TEMP'])/'c-v4-native'/'out'
+          q=json.loads((d/'V4_1_QA.json').read_text(encoding='utf8'))
+          if q['status']!='V4_1_AUDIO_FIRST_STORY_MERGE_PASS':raise SystemExit('Dynamic story composite failed')
+          if q['difference_from_original_native_frames']!=0:raise SystemExit('Scene replacement dropped frames')
+          if q['native_other_scenes_preserved']!=8:raise SystemExit('Native scenes not retained')
+          if q['fish_audio_imported'] or q['publish_allowed']:raise SystemExit('Silent preview mislabeled')
+          if min(q['scene_1_original_animation_frames'],q['scene_7_original_animation_frames'])<30:
+            raise SystemExit('Original narrative motion disappeared')
+          print('V4_1_CHARACTER_AND_CASH_AUDIO_FIRST_PASS',q['frames'])
+          PY
       - name: Upload visual-only acceptance proof (never synthetic WAVs)
         if: always()
         uses: actions/upload-artifact@v4
@@ -76,5 +98,7 @@ jobs:
           path: |
             ${{ runner.temp }}/c-v4-native/out/sheet.png
             ${{ runner.temp }}/c-v4-native/out/visual_720.mp4
+            ${{ runner.temp }}/c-v4-native/out/V4_1_story_audio_first_silent.mp4
+            ${{ runner.temp }}/c-v4-native/out/V4_1_QA.json
             ${{ runner.temp }}/c-v4-native/NATIVE_VOICE_QA.json
             tests/business-c/V4_NATIVE_TIMELINE.md

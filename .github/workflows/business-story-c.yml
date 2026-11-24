@@ -8,6 +8,7 @@ on:
       - 'scripts/build_cash_story_c.mjs'
       - 'scripts/make_cash_story_art.mjs'
       - 'scripts/prepare_ci_fonts_fast.mjs'
+      - 'scripts/business-c-v3/**'
       - 'tests/business-c/**'
       - 'kit/uncle.js'
   workflow_dispatch:
@@ -79,6 +80,35 @@ jobs:
           (d/'out'/'REPRO_QA.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf8')
           print(json.dumps(report,ensure_ascii=False))
           PY
+      - name: Regenerate actual V2 character and cash animations
+        run: |
+          python -m pip install --quiet Pillow numpy
+          mkdir -p "$RUNNER_TEMP/business-c-v3"
+          python scripts/business-c-v3/illustrate_v2.py "$RUNNER_TEMP/business-c-v3"
+          python scripts/business-c-v3/recompose_v2.py \
+            "$RUNNER_TEMP/business-c/out/visual_720.mp4" \
+            "$RUNNER_TEMP/business-c-v3/intro_drama.mp4" \
+            "$RUNNER_TEMP/business-c-v3/cash_motion.mp4" \
+            "$RUNNER_TEMP/business-c-v3/Business_C_V2_story_motion_silent.mp4"
+      - name: Stress test voice-led timing with synthetic QA tones - NOT Fish
+        run: |
+          python scripts/business-c-v3/voice_led.py \
+            --video "$RUNNER_TEMP/business-c-v3/Business_C_V2_story_motion_silent.mp4" \
+            --script "$RUNNER_TEMP/business-c/script.json" \
+            --voice-dir "$RUNNER_TEMP/business-c-v3/tone_input" \
+            --out "$RUNNER_TEMP/business-c-v3/voice_qa" \
+            --test-tone
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ['RUNNER_TEMP'])/'business-c-v3'/'voice_qa'/'VOICE_QA.json'
+          x=json.loads(p.read_text(encoding='utf8'))
+          if x['status']!='TEST_TONE_AV_PASS':raise SystemExit('Test-tone A/V retime failed')
+          if x['voice_identity']!='SYNTHETIC_TONE_NOT_FISH':raise SystemExit('Source-labeled voice flag missing')
+          if x['per_word_alignment_verified']:raise SystemExit('This is not true word alignment')
+          if x['av_delta_s']>.20:raise SystemExit('A/V length drift over 200ms')
+          print('VOICE_LED_BEAT_TIMING_QA_PASS',x['duration'],x['av_delta_s'])
+          PY
       - name: Internal-only artifact - no social publishing
         if: always()
         uses: actions/upload-artifact@v4
@@ -88,6 +118,10 @@ jobs:
           if-no-files-found: warn
           path: |
             ${{ runner.temp }}/business-c/out/visual_720.mp4
+            ${{ runner.temp }}/business-c-v3/Business_C_V2_story_motion_silent.mp4
+            ${{ runner.temp }}/business-c-v3/V2_REPRO_QA.json
+            ${{ runner.temp }}/business-c-v3/voice_qa/VOICE_QA.json
+            ${{ runner.temp }}/business-c-v3/voice_qa/sentence_captions.srt
             ${{ runner.temp }}/business-c/out/sheet.png
             ${{ runner.temp }}/business-c/out/REPRO_QA.json
             ${{ runner.temp }}/business-c/STORY_DIRECTOR.json

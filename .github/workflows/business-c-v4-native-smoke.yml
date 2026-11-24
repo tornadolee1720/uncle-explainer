@@ -1,0 +1,104 @@
+name: C V4 native audio-first vpro smoke (internal)
+on:
+  push:
+    branches:
+      - experiment/cashflow-story-c-20261124
+    paths:
+      - '.github/workflows/business-c-v4-native-smoke.yml'
+      - 'scripts/business-c-v4/**'
+      - 'scripts/business-c-v3/illustrate_v2.py'
+      - 'scripts/build_cash_story_c.mjs'
+      - 'tests/business-c/case.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-timeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Build original C story and voice-led physical timeline
+        run: |
+          npm ci
+          npx playwright install chromium
+          node scripts/prepare_ci_fonts_fast.mjs
+          npm install --no-save --no-package-lock @ffmpeg-installer/linux-x64 @ffprobe-installer/linux-x64
+          echo "$PWD/node_modules/@ffmpeg-installer/linux-x64" >> "$GITHUB_PATH"
+          echo "$PWD/node_modules/@ffprobe-installer/linux-x64" >> "$GITHUB_PATH"
+          node_modules/@ffmpeg-installer/linux-x64/ffmpeg -hide_banner -encoders | grep libx264
+          node scripts/new_film.mjs "$RUNNER_TEMP/c-v4-native" --vertical
+          node scripts/make_cash_story_art.mjs "$RUNNER_TEMP/c-v4-native"
+          node scripts/build_cash_story_c.mjs tests/business-c/case.json "$RUNNER_TEMP/c-v4-native"
+          python scripts/business-c-v4/native_voice_timeline.py --film-dir "$RUNNER_TEMP/c-v4-native" --test-tones
+      - name: Verify native render and original vpro scene compatibility
+        run: |
+          node scripts/render.mjs --dir "$RUNNER_TEMP/c-v4-native" --check
+          node scripts/render.mjs --dir "$RUNNER_TEMP/c-v4-native" --sheet
+          node scripts/render.mjs --dir "$RUNNER_TEMP/c-v4-native" --video --h 720
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=Path(os.environ['RUNNER_TEMP'])/'c-v4-native'
+          t=json.loads((d/'timeline.json').read_text())
+          q=json.loads((d/'NATIVE_VOICE_QA.json').read_text())
+          if t.get('stub') or len(t['beats'])!=10:raise SystemExit('Fake or incomplete timeline')
+          if q['voice']!='SYNTHETIC_TEST_TONES_NOT_FISH' or q['per_word_alignment_verified']:
+            raise SystemExit('Audio provenance or sync level mislabeled')
+          if not (45<t['duration']<75):raise SystemExit('Unexpected physical voice duration')
+          if not (d/'out'/'sheet.png').is_file():raise SystemExit('Native vpro could not render actual storyboard')
+          import subprocess
+          movie=d/'out'/'visual_720.mp4'
+          if not movie.is_file():raise SystemExit('Missing true native V4 MP4')
+          media=json.loads(subprocess.run(['ffprobe','-v','error','-show_format','-show_streams','-of','json',str(movie)],
+            capture_output=True,text=True,check=True).stdout)
+          streams=media.get('streams',[])
+          video=[v for v in streams if v.get('codec_type')=='video']
+          audio=[a for a in streams if a.get('codec_type')=='audio']
+          seconds=float(media['format']['duration'])
+          if len(video)!=1 or audio or video[0]['codec_name']!='h264':
+            raise SystemExit('V4 must be a SILENT native H264 video, not an alleged Fish film')
+          if (video[0]['width'],video[0]['height'],video[0]['r_frame_rate'])!=(720,1280,'30/1'):
+            raise SystemExit('Unexpected 9:16 native vpro output format')
+          if abs(seconds-t['duration'])>.20:raise SystemExit('Voice-driven native vpro duration drift')
+          print('NATIVE_VPRO_AUDIO_TIMELINE_FULL_VIDEO_PASS',round(seconds,3),t['duration'])
+          PY
+      - name: Compose illustrated business story using physical voice timeline
+        run: |
+          python -m pip install --quiet Pillow numpy
+          python scripts/business-c-v4/compose_voice_first_story.py \
+            --native-video "$RUNNER_TEMP/c-v4-native/out/visual_720.mp4" \
+            --timeline "$RUNNER_TEMP/c-v4-native/timeline.json" \
+            --art-source "scripts/business-c-v3/illustrate_v2.py" \
+            --output "$RUNNER_TEMP/c-v4-native/out/V4_1_story_audio_first_silent.mp4"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=Path(os.environ['RUNNER_TEMP'])/'c-v4-native'/'out'
+          q=json.loads((d/'V4_1_QA.json').read_text(encoding='utf8'))
+          if q['status']!='V4_1_AUDIO_FIRST_STORY_MERGE_PASS':raise SystemExit('Dynamic story composite failed')
+          if q['difference_from_original_native_frames']!=0:raise SystemExit('Scene replacement dropped frames')
+          if q['native_other_scenes_preserved']!=8:raise SystemExit('Native scenes not retained')
+          if q['fish_audio_imported'] or q['publish_allowed']:raise SystemExit('Silent preview mislabeled')
+          if min(q['scene_1_original_animation_frames'],q['scene_7_original_animation_frames'])<30:
+            raise SystemExit('Original narrative motion disappeared')
+          print('V4_1_CHARACTER_AND_CASH_AUDIO_FIRST_PASS',q['frames'])
+          PY
+      - name: Upload visual-only acceptance proof (never synthetic WAVs)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c-v4-native-review-${{ github.run_number }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/c-v4-native/out/sheet.png
+            ${{ runner.temp }}/c-v4-native/out/visual_720.mp4
+            ${{ runner.temp }}/c-v4-native/out/V4_1_story_audio_first_silent.mp4
+            ${{ runner.temp }}/c-v4-native/out/V4_1_QA.json
+            ${{ runner.temp }}/c-v4-native/NATIVE_VOICE_QA.json
+            tests/business-c/V4_NATIVE_TIMELINE.md

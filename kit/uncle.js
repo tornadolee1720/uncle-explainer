@@ -8,6 +8,7 @@ const PRESETS={
  eye:{accent:'#FFD45C',bg0:'#18263A',bg1:'#22354f',ink:'#F5F1E6',ink2:'#aab6c8',label:'目鏡大叔'},
  shop:{accent:'#F2994A',bg0:'#2a211b',bg1:'#3a2e25',ink:'#F7F0E4',ink2:'#c2b3a2',label:'大叔開店筆記'},
  news:{accent:'#65d8c7',bg0:'#121c2b',bg1:'#223550',ink:'#f5f5ed',ink2:'#afbecf',label:'大叔看新聞'},
+ story:{accent:'#EDB872',bg0:'#1B343B',bg1:'#36504D',ink:'#F6F0E6',ink2:'#BED0CA',label:'大叔商業故事'},
 };
 function preset(name='eye',o={}){
  const P=Object.assign({},PRESETS[name]??PRESETS.eye,o);

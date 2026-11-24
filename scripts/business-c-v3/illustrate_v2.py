@@ -8,8 +8,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image,ImageDraw,ImageFont
 W,H,FPS=540,960,30
-D=Path(sys.argv[1]).resolve() if len(sys.argv)>1 else None
-if not D:raise SystemExit('Provide work directory')
+D=Path(sys.argv[1]).resolve() if __name__=='__main__' and len(sys.argv)>1 else Path.cwd()
+if __name__=='__main__':D.mkdir(parents=True,exist_ok=True)
 D.mkdir(parents=True,exist_ok=True)
 font_path=next((x for x in [
  Path('fonts/NotoSansTC-Regular.ttf'),
@@ -125,5 +125,6 @@ def write(name,fn,N):
  err=proc.stderr.read();ret=proc.wait()
  if ret:raise RuntimeError(name+' FFmpeg failure '+err.decode(errors='replace')[-1300:])
  print(name, str(dest),N)
-write('intro_drama',intro,211)
-write('cash_motion',cash,137)
+if __name__=='__main__':
+ write('intro_drama',intro,211)
+ write('cash_motion',cash,137)

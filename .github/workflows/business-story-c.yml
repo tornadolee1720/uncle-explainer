@@ -9,6 +9,7 @@ on:
       - 'scripts/make_cash_story_art.mjs'
       - 'scripts/prepare_ci_fonts_fast.mjs'
       - 'scripts/business-c-v3/**'
+      - 'scripts/business-c-v4/**'
       - 'tests/business-c/**'
       - 'kit/uncle.js'
   workflow_dispatch:
@@ -109,6 +110,25 @@ jobs:
           if x['av_delta_s']>.20:raise SystemExit('A/V length drift over 200ms')
           print('VOICE_LED_BEAT_TIMING_QA_PASS',x['duration'],x['av_delta_s'])
           PY
+      - name: Validate physical-audio-driven NATIVE vpro timing, not FFmpeg retime
+        run: |
+          cp "$RUNNER_TEMP/business-c/out/sheet.png" "$RUNNER_TEMP/business-c/out/sheet_original_stub.png"
+          python scripts/business-c-v4/native_voice_timeline.py --film-dir "$RUNNER_TEMP/business-c" --test-tones
+          node scripts/render.mjs --dir "$RUNNER_TEMP/business-c" --check
+          node scripts/render.mjs --dir "$RUNNER_TEMP/business-c" --sheet
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          d=Path(os.environ['RUNNER_TEMP'])/'business-c'
+          qa=json.loads((d/'NATIVE_VOICE_QA.json').read_text())
+          t=json.loads((d/'timeline.json').read_text())
+          if qa['status']!='NATIVE_VPRO_PHYSICAL_AUDIO_TIMELINE_PASS':raise SystemExit('Native audio timing failed')
+          if qa['voice']!='SYNTHETIC_TEST_TONES_NOT_FISH':raise SystemExit('Test audio mislabeled')
+          if qa['per_word_alignment_verified']:raise SystemExit('Estimated character anchors cannot be marked word-aligned')
+          if t.get('stub') or len(t['beats'])!=10:raise SystemExit('Native physical voice timeline not generated')
+          if any(not (b['start'] < b['end']) for b in t['beats']):raise SystemExit('Invalid native beat bounds')
+          print('V4_NATIVE_VPRO_TIMELINE_PASS',t['duration'])
+          PY
       - name: Internal-only artifact - no social publishing
         if: always()
         uses: actions/upload-artifact@v4
@@ -123,6 +143,9 @@ jobs:
             ${{ runner.temp }}/business-c-v3/voice_qa/VOICE_QA.json
             ${{ runner.temp }}/business-c-v3/voice_qa/sentence_captions.srt
             ${{ runner.temp }}/business-c/out/sheet.png
+            ${{ runner.temp }}/business-c/out/sheet_original_stub.png
+            ${{ runner.temp }}/business-c/timeline.json
+            ${{ runner.temp }}/business-c/NATIVE_VOICE_QA.json
             ${{ runner.temp }}/business-c/out/REPRO_QA.json
             ${{ runner.temp }}/business-c/STORY_DIRECTOR.json
             ${{ runner.temp }}/business-c/script.json

@@ -1,0 +1,60 @@
+name: C V4 native audio-first vpro smoke (internal)
+on:
+  push:
+    branches:
+      - experiment/cashflow-story-c-20261124
+    paths:
+      - '.github/workflows/business-c-v4-native-smoke.yml'
+      - 'scripts/business-c-v4/**'
+      - 'scripts/build_cash_story_c.mjs'
+      - 'tests/business-c/case.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-timeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Build original C story and voice-led physical timeline
+        run: |
+          npm ci
+          npx playwright install chromium
+          node scripts/prepare_ci_fonts_fast.mjs
+          node scripts/new_film.mjs "$RUNNER_TEMP/c-v4-native" --vertical
+          node scripts/make_cash_story_art.mjs "$RUNNER_TEMP/c-v4-native"
+          node scripts/build_cash_story_c.mjs tests/business-c/case.json "$RUNNER_TEMP/c-v4-native"
+          python scripts/business-c-v4/native_voice_timeline.py --film-dir "$RUNNER_TEMP/c-v4-native" --test-tones
+      - name: Verify native render and original vpro scene compatibility
+        run: |
+          node scripts/render.mjs --dir "$RUNNER_TEMP/c-v4-native" --check
+          node scripts/render.mjs --dir "$RUNNER_TEMP/c-v4-native" --sheet
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=Path(os.environ['RUNNER_TEMP'])/'c-v4-native'
+          t=json.loads((d/'timeline.json').read_text())
+          q=json.loads((d/'NATIVE_VOICE_QA.json').read_text())
+          if t.get('stub') or len(t['beats'])!=10:raise SystemExit('Fake or incomplete timeline')
+          if q['voice']!='SYNTHETIC_TEST_TONES_NOT_FISH' or q['per_word_alignment_verified']:
+            raise SystemExit('Audio provenance or sync level mislabeled')
+          if not (45<t['duration']<75):raise SystemExit('Unexpected physical voice duration')
+          if not (d/'out'/'sheet.png').is_file():raise SystemExit('Native vpro could not render actual storyboard')
+          print('NATIVE_VPRO_AUDIO_TIMELINE_SHEET_PASS',t['duration'])
+          PY
+      - name: Upload visual-only acceptance proof (never synthetic WAVs)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c-v4-native-review-${{ github.run_number }}
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/c-v4-native/out/sheet.png
+            ${{ runner.temp }}/c-v4-native/NATIVE_VOICE_QA.json
+            tests/business-c/V4_NATIVE_TIMELINE.md

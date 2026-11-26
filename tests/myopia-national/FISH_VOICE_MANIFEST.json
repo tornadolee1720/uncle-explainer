@@ -1,0 +1,75 @@
+{
+ "voice_key": "taiwan_ad_male",
+ "clips": [
+  {
+   "id": "b01",
+   "text": "學校說視力不良的孩子變少了，那近視也變少了嗎？先別急。",
+   "size_bytes_reported_by_fish": 74395,
+   "sha256_verified_by_provider_probe": "a903c4f36063b6f78df586ec4ed7ade6f1fb4934fb5e50538dde0200fd9436ff",
+   "file_name": "fish-tts-1795515157-5HZRraYI.mp3"
+  },
+  {
+   "id": "b02",
+   "text": "想像一間國小教室，孩子說看不清楚黑板。這句話背後，其實有兩組全國數字。",
+   "size_bytes_reported_by_fish": 103652,
+   "sha256_verified_by_provider_probe": "ca0615f981670869648a0f4be2dc109e71691ac6deabf4031dfdc960604528c0",
+   "file_name": "fish-tts-1795515161-YtJQz7vs.mp3"
+  },
+  {
+   "id": "b03",
+   "text": "第一組，是全國近視研究。一九八六年，小六生有百分之二十七點五近視；到了兩千年，已經是百分之六十點六。",
+   "size_bytes_reported_by_fish": 146702,
+   "sha256_verified_by_provider_probe": "11c2424f4396a2a6f992466607ebbc36a9166ea6207ccb1f060cfa59ea48628f",
+   "file_name": "fish-tts-1795515166-hYlRKkrt.mp3"
+  },
+  {
+   "id": "b04",
+   "text": "不過，早年算近視的標準是負零點二五度，後來改成負零點五度。尺不一樣，不能接成一條線。",
+   "size_bytes_reported_by_fish": 121207,
+   "sha256_verified_by_provider_probe": "da4004c61d02b67843d097e28c6cc70b8be4ba79b5a4395407e92a846f062ab2",
+   "file_name": "fish-tts-1795515171-bm7tC0MH.mp3"
+  },
+  {
+   "id": "b05",
+   "text": "用同一個負零點五度來看，二零一零年小六生是百分之六十二，二零一七年是百分之七十點六。",
+   "size_bytes_reported_by_fish": 110340,
+   "sha256_verified_by_provider_probe": "15c10b902dd6591bb7eda560274a6f42dcdbaa3c42a63aee765be3301ee5298c",
+   "file_name": "fish-tts-1795515175-s145a5YB.mp3"
+  },
+  {
+   "id": "b06",
+   "text": "第二組，是學校每年做的視力檢查，看的是裸眼視力，不是近視度數。",
+   "size_bytes_reported_by_fish": 92368,
+   "sha256_verified_by_provider_probe": "a676a200412ea2f6deabf0c1c36d1a09bfa801084bb4b90d5c612af0d1a8b828",
+   "file_name": "fish-tts-1795515179-fpUTIk_4.mp3"
+  },
+  {
+   "id": "b07",
+   "text": "民國一百零三學年度，國小視力不良的比例，是百分之四十七點零五；到了一百一十三學年度，是百分之四十四點八三。",
+   "size_bytes_reported_by_fish": 134581,
+   "sha256_verified_by_provider_probe": "5c30875a5e08f51f596a5c9aabd268b19219b43ec169faa62fa84ceafe322698",
+   "file_name": "fish-tts-1795515183-sLYWmjLF.mp3"
+  },
+  {
+   "id": "b08",
+   "text": "一條往上、一條往下，看起來很矛盾？其實兩個不是同一個指標，不能放在同一把尺上比。",
+   "size_bytes_reported_by_fish": 104906,
+   "sha256_verified_by_provider_probe": "73bcdf75ef74345d9ec3f66eb490208df1ccc2208661595645eb48a99dd2dc37",
+   "file_name": "fish-tts-1795515187-QPiSfLZ7.mp3"
+  },
+  {
+   "id": "b09",
+   "text": "二零二二年，新聞也報導了新的研究，可是原始報告跟方法，目前都沒核對過，現在不能說近視已經下降。",
+   "size_bytes_reported_by_fish": 126640,
+   "sha256_verified_by_provider_probe": "a506428006eab5df524231baeaa1e43af6e196ce7c399496d439e7a470bc87e0",
+   "file_name": "fish-tts-1795515191-Ej5dvC-N.mp3"
+  },
+  {
+   "id": "b10",
+   "text": "一次視力檢查只是提醒，不代表知道近視度數。孩子的眼睛，要持續追蹤才知道。",
+   "size_bytes_reported_by_fish": 99055,
+   "sha256_verified_by_provider_probe": "53717f56311d49b7053cfa0f5b6299ed83e1c0cdec04cf60975222c150c5b54a",
+   "file_name": "fish-tts-1795515195-Ww4s8M0X.mp3"
+  }
+ ]
+}

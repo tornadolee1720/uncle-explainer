@@ -1,0 +1,20 @@
+[
+  {
+    "id": "nvidia_headline",
+    "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Third-Quarter-Fiscal-2027/default.aspx",
+    "find": [
+      "Revenue of $115.8 billion",
+      "Data Center revenue of $107.6 billion"
+    ],
+    "off": 170
+  },
+  {
+    "id": "nvidia_newsroom",
+    "url": "https://nvidianews.nvidia.com/news/nvidia-announces-financial-results-for-third-quarter-fiscal-2027",
+    "find": [
+      "Revenue of $115.8 billion",
+      "Data Center revenue of $107.6 billion"
+    ],
+    "off": 240
+  }
+]

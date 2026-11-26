@@ -1,0 +1,36 @@
+{
+  "project": "台灣學童近視：近十年全國資料｜V4.1 實驗",
+  "date": "2026-11-24",
+  "branch": "experiment/taiwan-myopia-national-20261124",
+  "render_verified": true,
+  "render_detail": {
+    "final": "1080x1920 H264+AAC 30fps，75.5 秒（含 1.5 秒品牌結尾卡）",
+    "loudness": "-15.9 LUFS",
+    "native_shots": 7,
+    "original_animation_shots": [
+      2,
+      7,
+      8
+    ]
+  },
+  "vpro_check": "PASS（剩 1 條提醒：全片無 props 道具）",
+  "vpro_sheet": "PASS",
+  "data_verified": false,
+  "data_detail": "11/41 verified：學校篩檢 103–113 依教育部表2-4（第8頁）核實，113 學年改為 44.83；近視調查 1986/2000/2010/2017 與 2022 報導仍 pending",
+  "fish_voice_embedded": true,
+  "audio": "Fish taiwan_ad_male 逐句 10 段（台灣口語改寫、避開破音字；SHA256 見 FISH_VOICE_MANIFEST.json），句長對齊、字級時間為估算非 ASR；原創合成 pad BGM 約低於人聲 10 dB",
+  "watermark_burned": true,
+  "brand_end_card_attached": true,
+  "human_medical_review_required": true,
+  "publish_allowed": false,
+  "status": "INTERNAL_VOICED_SAMPLE｜近視調查未核實，不是可發布衛教成片",
+  "open_items": [
+    "回查國健署原始近視調查（1986/2000/2010/2017 小六數字、門檻、是否散瞳、頁碼）；製作時網頁讀取未獲核准",
+    "2022 調查原始報告",
+    "人工聽一遍 10 段配音：讀音、順序、數字（例：負零點二五度、四十四點八三）",
+    "結尾口白要用目鏡大叔本人聲（uncle_host）或維持無口白",
+    "BGM 為合成 pad，正式版可換配樂",
+    "驗光師／醫事審稿"
+  ],
+  "brand_end_card_note": "結尾卡無「我是驗光師，目鏡大叔」口白：taiwan_ad_male 不是使用者本人聲音，聲線登錄禁止冒充使用者"
+}

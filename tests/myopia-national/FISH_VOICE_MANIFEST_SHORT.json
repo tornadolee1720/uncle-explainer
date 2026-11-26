@@ -1,0 +1,61 @@
+{
+ "voice_key": "taiwan_ad_male",
+ "clips": [
+  {
+   "id": "b01",
+   "text": "學校說，視力不良的孩子變少了。那近視，也變少了嗎？",
+   "size_bytes_reported_by_fish": 64782,
+   "sha256_verified_by_provider_probe": "c44dd2bef266784e7ed138264af189650d902f7140ded53a6c21bb75d87299d9",
+   "file_name": "fish-tts-1795667253-56oP-a_F.mp3"
+  },
+  {
+   "id": "b02",
+   "text": "這些年，我最常聽到家長說：學校說他零點八，應該沒事吧？",
+   "size_bytes_reported_by_fish": 78993,
+   "sha256_verified_by_provider_probe": "1407c0c7aa127c9921af02828d3074008721cbe28697bcf511000cefe65a663f",
+   "file_name": "fish-tts-1795667257-eymtxDk7.mp3"
+  },
+  {
+   "id": "b03",
+   "text": "可是，學校看的是裸眼視力，不是近視度數。這是兩把不一樣的尺。",
+   "size_bytes_reported_by_fish": 78993,
+   "sha256_verified_by_provider_probe": "9bec278c59c9dccb62e504b1bc7afdbdb3eb18e0ef6df78276e5063ef032d3d7",
+   "file_name": "fish-tts-1795667261-uGCBAILv.mp3"
+  },
+  {
+   "id": "b04",
+   "text": "教育部的數字是：民國一百零三學年度，國小視力不良的比例，是百分之四十七點零五；一百一十三學年度，是百分之四十四點八三。",
+   "size_bytes_reported_by_fish": 156315,
+   "sha256_verified_by_provider_probe": "9c6fa90083dd954ea67c880e43932b84e6e549df78d168e56e0ccaf4afcfa0b2",
+   "file_name": "fish-tts-1795667267-QQRInO4n.mp3"
+  },
+  {
+   "id": "b05",
+   "text": "看起來變好了？可是全國近視研究看的是另一把尺，小六生近視的比例，一直超過一半。",
+   "size_bytes_reported_by_fish": 106578,
+   "sha256_verified_by_provider_probe": "a694d5abefcbecea22dc3a1bd22736072608b5c53a04fe4b79d615526699231b",
+   "file_name": "fish-tts-1795667272-uv_SIf9V.mp3"
+  },
+  {
+   "id": "b06",
+   "text": "一條往下，一條往上。不是矛盾，是兩把尺，不能放在一起比。",
+   "size_bytes_reported_by_fish": 78993,
+   "sha256_verified_by_provider_probe": "e7fd3c40c2069a47e48a4ef741695a98f7484d7febd25f4423eba216fe40878d",
+   "file_name": "fish-tts-1795667276-Q5T1Hc2M.mp3"
+  },
+  {
+   "id": "b07",
+   "text": "所以，孩子學校篩檢過了，就代表沒近視嗎？不一定。",
+   "size_bytes_reported_by_fish": 66454,
+   "sha256_verified_by_provider_probe": "d36d67bb707c63cf1fef35178225dd3c3f731c04ce08242637d00ead37fe1cde",
+   "file_name": "fish-tts-1795667279-bOe8ZYTc.mp3"
+  },
+  {
+   "id": "b08",
+   "text": "篩檢沒過，就帶孩子去做完整的檢查；篩檢過了，也要定期追蹤。",
+   "size_bytes_reported_by_fish": 87770,
+   "sha256_verified_by_provider_probe": "0e11e9954792fc2a77e5d9db8013713770f2de68f3618e0c1fa40cc9a69b2a3e",
+   "file_name": "fish-tts-1795667283-tMSZ2CWA.mp3"
+  }
+ ]
+}

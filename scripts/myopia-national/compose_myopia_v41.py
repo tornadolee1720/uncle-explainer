@@ -219,6 +219,7 @@ def main():
     ap.add_argument('--film-dir', type=Path, required=True)
     ap.add_argument('--audit', type=Path, default=Path('tests/myopia-national/EVIDENCE_AUDIT.json'))
     ap.add_argument('--output', type=Path, required=True)
+    ap.add_argument('--no-watermark', action='store_true', help='review copy: drop burned banner, keep in-frame pending labels')
     ap.add_argument('--voice-label', default='無聲測試版｜尚未匯入 Fish 正式配音')
     a = ap.parse_args(); D = a.film_dir.resolve(); out = a.output.resolve(); root = out.parent; root.mkdir(parents=True, exist_ok=True)
     T = json.loads((D / 'timeline.json').read_text(encoding='utf8')); R = json.loads((D / 'MYOPIA_DIRECTOR.json').read_text(encoding='utf8'))
@@ -240,6 +241,14 @@ def main():
     joined = root / 'joined_silent.mp4'
     call(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-f', 'concat', '-safe', '0', '-i', lst, '-an', '-c', 'copy', joined])
     wm_needed = R['watermark_required'] or A['summary']['verified'] < A['summary']['total']
+    if a.no_watermark:
+        wm_needed = False
+        call(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-i', joined, '-an', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '20',
+              '-r', '30', '-movflags', '+faststart', out])
+        fn = nframes(out)
+        if fn != N: raise RuntimeError('final frame drift')
+        print(json.dumps({'status': 'MYOPIA_V41_NO_WATERMARK_PASS', 'frames': fn, 'pending_labels_in_frame': True}))
+        return
     wm = root / 'watermark.png'
     watermark(wm, [R['watermark'] if wm_needed else '資料已核實・內部審片', a.voice_label])
     call(['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-i', joined, '-i', wm, '-filter_complex', '[0:v][1:v]overlay=0:0,format=yuv420p',

@@ -36,8 +36,8 @@ def duration(wav):
  return sec,round(rms,2)
 def build(args):
  D=args.film_dir.resolve();S=json.loads((D/'script.json').read_text(encoding='utf8'))
- lines=S['lines'];ids=[f'b{i:02}' for i in range(1,11)]
- if [l['id'] for l in lines]!=ids:raise RuntimeError('Ten ordered numbered beats required')
+ lines=S['lines'];ids=[f'b{i:02}' for i in range(1,args.beats+1)]
+ if [l['id'] for l in lines]!=ids:raise RuntimeError(f'{args.beats} ordered numbered beats required')
  if not args.test_tones and (not args.fish_manifest or not args.source_voice_dir):
   raise RuntimeError('Real Fish needs PRIVATE audio directory and provenance manifest')
  manifest={}
@@ -90,6 +90,7 @@ def build(args):
  print(json.dumps({'status':QA['status'],'voice':QA['voice'],'duration':QA['duration_seconds']},ensure_ascii=False))
 if __name__=='__main__':
  p=argparse.ArgumentParser()
+ p.add_argument('--beats',type=int,default=10)
  p.add_argument('--film-dir',required=True,type=Path)
  p.add_argument('--source-voice-dir',type=Path)
  p.add_argument('--fish-manifest',type=Path)

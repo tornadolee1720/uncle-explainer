@@ -61,7 +61,7 @@ def subtitle(im, beat, t):
     text = beat['text']; parts, cur = [], ''
     for ch in text:
         cur += ch
-        if ch in '，。；？！': parts.append(cur.rstrip('，。；？！')); cur = ''
+        if ch in '，。；？！：': parts.append(cur.rstrip('，。；？！：')); cur = ''
     if cur.strip(): parts.append(cur)
     tot = sum(len(p) for p in parts); acc = beat['start']; span = beat['end'] - beat['start']; s = parts[-1]
     for p in parts:
@@ -147,13 +147,36 @@ def dualtrack(t, T, beat, claims):
             if i < m:
                 d.ellipse([pts[i][0] - 8, pts[i][1] - 8, pts[i][0] + 8, pts[i][1] + 8], fill=PAPER)
                 d.text((pts[i][0] - (0 if i == 0 else 100), pts[i][1] - 48), f"{screen[i]['value']}%", font=font(26), fill=PAPER)
-                d.text((pts[i][0] - (0 if i == 0 else 50), ay1 + 8), str(screen[i]['calendar_year']), font=font(22), fill=GREY)
+                d.text((pts[i][0] - (0 if i == 0 else 90), ay1 + 8), f"{int(screen[i]['calendar_year']) - 1911}學年", font=font(22), fill=GREY)
         if p > .7: d.text((W - 110, 630), '↓', font=font(56), fill=AMBER)
     ks = back((p - .55) / .12)
     if ks > 0:
         shake = math.sin(p * 90) * 6 * max(0, 1 - (p - .55) / .1)
         f = font(int(96 * ks)); d.rounded_rectangle([W / 2 - 62 * ks + shake, 585 - 42 * ks, W / 2 + 62 * ks + shake, 585 + 42 * ks], 30, fill=YEL)
         d.text((W / 2 - 30 * ks + shake, 585 - 66 * ks), '≠', font=f, fill=NAVY)
+    subtitle(im, beat, beat['_t0'] + t)
+    return im
+
+def parent(t, T, beat, claims):
+    """Uncle POV: fictional classroom, then a parent's quote bubble pops in (no faces, no real people)."""
+    im = bg(); d = ImageDraw.Draw(im, 'RGBA'); p = t / T
+    chip(d, (40, 142), '虛構情境示意｜非真實人物', font(24), fill=(245, 241, 230, 230))
+    bx, by = 70, 200; d.rounded_rectangle([bx, by, W - 70, by + 280], 18, fill=(47, 90, 76), outline=(169, 132, 90), width=14)
+    k0 = ease(p / .15); f = font(40); s = '視力檢查 0.8'; w = d.textlength(s, font=f)
+    d.text(((W - w) / 2, by + 110), s, font=f, fill=(245, 241, 230, int(230 * k0)))
+    for i in range(6):
+        cx = 150 + (i % 3) * 210; cy = 700 + (i // 3) * 140; col = [AMBER, TEAL, (201, 138, 94)][i % 3]
+        d.rounded_rectangle([cx - 80, cy + 50, cx + 80, cy + 66], 6, fill=(169, 132, 90))
+        d.pieslice([cx - 44, cy - 2, cx + 44, cy + 86], 180, 360, fill=col); d.ellipse([cx - 32, cy - 52, cx + 32, cy + 12], fill=(45, 38, 34))
+    kb = back((p - .25) / .15)
+    if kb > 0:
+        x0, y0, x1, y1 = 60, 520, W - 60, 680; cx = (x0 + x1) / 2; cy = (y0 + y1) / 2
+        sx = lambda x: cx + (x - cx) * kb; sy = lambda y: cy + (y - cy) * kb
+        d.rounded_rectangle([sx(x0), sy(y0), sx(x1), sy(y1)], 28, fill=(245, 241, 230, 245), outline=YEL, width=5)
+        d.polygon([(sx(140), sy(y1)), (sx(110), sy(y1 + 50)), (sx(200), sy(y1))], fill=(245, 241, 230, 245))
+        if kb > .9:
+            d.text((x0 + 30, y0 + 18), '家長最常說：', font=font(28, 'Medium'), fill=NAVY)
+            q = '學校說 0.8，應該沒事吧？'; d.text((x0 + 30, y0 + 70), q, font=font(42), fill=NAVY)
     subtitle(im, beat, beat['_t0'] + t)
     return im
 
@@ -225,13 +248,15 @@ def main():
     T = json.loads((D / 'timeline.json').read_text(encoding='utf8')); R = json.loads((D / 'MYOPIA_DIRECTOR.json').read_text(encoding='utf8'))
     A = json.loads(a.audit.read_text(encoding='utf8')); claims = A['claims']
     beats = T['beats']
-    if [b['id'] for b in beats] != [f'b{i:02}' for i in range(1, 11)] or T.get('stub'): raise RuntimeError('Need 10 physical beats')
+    nb = len(beats)
+    if [b['id'] for b in beats] != [f'b{i:02}' for i in range(1, nb + 1)] or T.get('stub'): raise RuntimeError('Need physical beats b01..bNN')
     native = D / 'out' / 'visual_720.mp4'; N = nframes(native)
     if abs(N / FPS - T['duration']) > .2: raise RuntimeError('native duration mismatch')
     st = [round(b['start'] * FPS) for b in beats]; st[0] = 0; bounds = st + [N]
-    rep = {R['replace_shots']['classroom']: classroom, R['replace_shots']['decade']: decade, R['replace_shots']['dualtrack']: dualtrack}
+    FN = {'classroom': classroom, 'parent': parent, 'decade': decade, 'dualtrack': dualtrack}
+    rep = {i: FN[k] for k, i in R['replace_shots'].items()}
     segs = []
-    for i in range(10):
+    for i in range(nb):
         a0, a1 = bounds[i], bounds[i + 1]; f = root / f'seg_{i + 1:02}.mp4'
         if i in rep:
             b = dict(beats[i]); b['_t0'] = a0 / FPS; draw_shot(rep[i], a1 - a0, b, claims, f)
@@ -256,7 +281,7 @@ def main():
     fn = nframes(out)
     qa = {'status': 'MYOPIA_V41_SILENT_COMPOSITE_PASS' if fn == N else 'FRAME_DRIFT', 'frames': fn, 'native_frames': N,
           'duration_seconds': round(fn / FPS, 3), 'format': 'H264 720x1280 30fps, no audio',
-          'native_shots_kept': 10 - len(rep), 'original_animation_shots': sorted(i + 1 for i in rep),
+          'native_shots_kept': nb - len(rep), 'original_animation_shots': sorted(i + 1 for i in rep),
           'original_animation_frames': {str(i + 1): bounds[i + 1] - bounds[i] for i in rep},
           'watermark_burned': wm_needed, 'subtitles': 'vpro native in 8 shots; Pillow-drawn in shots 2 and 8 (time-proportional, not ASR)'}
     if fn != N: raise RuntimeError('final frame drift')

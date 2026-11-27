@@ -5,9 +5,9 @@ export function validateRetention(plan,script,timeline){
  const lines=script?.lines, beats=timeline?.beats;
  if(!Array.isArray(lines)||!lines.length||!Array.isArray(beats)||!beats.length)return {errors:["缺少 script.lines 或 timeline.beats"],warnings};
  const ids=lines.map(x=>x?.id); if(ids.some(x=>!good(x))||new Set(ids).size!==ids.length)fail("script ID 缺漏或重複");
- const index=new Map(ids.map((id,i)=>[id,i])); const time=new Map(beats.map(x=>[x.id,x]));
- if(beats.length!==lines.length||beats.some((b,i)=>b.id!==ids[i]||b.text!==lines[i].text||!Number.isFinite(b.start)||!Number.isFinite(b.end)||b.start<0||b.end<=b.start||(i>0&&b.start<beats[i-1].end-0.001)))fail("時間線與文案不一致或時間重疊");
- if(!Number.isFinite(timeline.duration)||timeline.duration<=0||beats.some(b=>b.end>timeline.duration+0.001))fail("片長無效或超出片長");
+ const index=new Map(ids.map((id,i)=>[id,i])); const time=new Map(beats.filter(Boolean).map(x=>[x.id,x]));
+ if(beats.length!==lines.length||beats.some((b,i)=>!b||!lines[i]||b.id!==ids[i]||b.text!==lines[i].text||!Number.isFinite(b.start)||!Number.isFinite(b.end)||b.start<0||b.end<=b.start||(i>0&&b.start<(beats[i-1]?.end??Infinity)-0.001)))fail("時間線與文案不一致或時間重疊");
+ if(!Number.isFinite(timeline.duration)||timeline.duration<=0||beats.some(b=>!b||b.end>timeline.duration+0.001))fail("片長無效或超出片長");
  if(!good(plan.promise))fail("缺少觀眾承諾");
  if(!Array.isArray(plan.beats)||!plan.beats.length)return {errors:[...errors,"缺少留存段落"],warnings};
  const seen=new Set(), values=[],loops=new Map(),closed=new Set(),ctas=[]; let last=-1, hooks=0;
@@ -26,8 +26,8 @@ export function validateRetention(plan,script,timeline){
  if(new Set(values.map(b=>b.value.trim())).size!==values.length)fail("價值段文字重複");
  for(const id of loops.keys())if(!closed.has(id))fail("未兌現懸念："+id);
  if(ctas.length>1)fail("只能有一個 CTA 段");
- if(ctas.length&&plan.beats.slice(plan.beats.indexOf(ctas[0])+1).some(b=>b.role!=="brand"))fail("CTA 後只能有品牌署名");
- if(plan.mode!=="ugc"&&!plan.beats.some(b=>b.role==="promise"))fail("知識影片缺少明確承諾段");
+ if(ctas.length&&plan.beats.slice(plan.beats.indexOf(ctas[0])+1).some(b=>b?.role!=="brand"))fail("CTA 後只能有品牌署名");
+ if(plan.mode!=="ugc"){const p=plan.beats.findIndex(b=>b?.role==="promise"),v=plan.beats.findIndex(b=>b?.role==="value");if(p<0||p>v)fail("知識影片須在第一價值前建立明確承諾");}
  if(plan.mode==="ugc"&&loops.size>1)fail("UGC 不強塞多重懸念");
  if(values.length){const t=time.get(values[0].lineIds[0])?.start;const limit=plan.mode==="ugc"?timeline.duration:plan.mode==="short"?8:plan.mode==="explainer"?Math.min(23,timeline.duration*.30):timeline.duration*.20;if(Number.isFinite(t)&&t>limit)warnings.push("第一價值點偏晚，請人工確認："+t+" 秒");}
  if(timeline.stub)warnings.push("目前為估算時間線，正式配音後須重驗");

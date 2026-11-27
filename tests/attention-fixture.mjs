@@ -1,0 +1,6 @@
+import {attentionFingerprint} from '../scripts/attention-engine.mjs';
+export function attentionFixture(plan,script,timeline){
+ const a=script.lines[0].id,b=script.lines[1].id;
+ const bundle={version:1,attention:{version:1,route:'experiment',audience:'想看簡單動畫變化的測試觀眾',stakes:'在極短時間內看懂圓點大小變化',hook:{lineId:a,quote:script.lines[0].text,visual:'白底圓點在第一個畫面中出現',audio:'測試無聲版本，正式版須另外審查聲音',alignment:'開場句子與圓點直接指向相同物件'},prediction:{before:'觀眾起初看到固定大小的圓點',after:'觀眾看到圓點直徑逐步增加',mechanism:'用固定背景讓大小變化容易察覺',revealLineId:b},micro:[{lineId:b,kind:'demo',newReason:'讓觀眾親眼看到圓點大小改變',visual:'黑色圓點的寬度逐步增加'}]},visual:{version:1,shots:[{lineIds:[a,b],says:'觀眾理解圓點尺寸逐步增加',visual:'白底黑色圓點進行尺寸動畫',motionReason:'讓圓點尺寸變化直接可見',connection:'同一物件持續保留在畫面中',audioRelation:'無聲測試用於檢查渲染管線，不宣稱音畫完成',kind:'experiment',focusCount:1,cards:[]}],terms:[]},viral:{version:1,share:{motive:'none',reason:'本素材僅測試瀏覽器渲染與管線',recipient:'沒有真實發布受眾，僅測試人員',valueLineId:b},goal:'none',replay:{mode:'none',reason:'測試素材不需要誘導觀眾重播'},recentRoutes:[],routeReason:'尺寸實驗可直接驗證動畫渲染'},review:{decision:'pass',reviewer:{type:'ai',name:'synthetic test fixture'},reviewedAt:'2026-11-28T00:00:00Z',reason:'此為程式測試合成樣本，不代表真實影片品質',risks:{}}};
+ bundle.review.fingerprint=attentionFingerprint(bundle,plan,script,timeline);return bundle;
+}

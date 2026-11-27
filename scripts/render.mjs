@@ -16,6 +16,7 @@ import {createRequire} from 'node:module'; import fsSync from 'node:fs'; import 
 import {stub} from './timeline_stub.mjs';
 import {validateRetention} from './retention.mjs';
 import {validateSemanticReview} from './retention-semantic.mjs';
+import {validateAttentionBundle} from './attention-engine.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i >= 0 ? process.argv[i + 1] : null; };
 const has = k => process.argv.includes(k);
@@ -67,6 +68,13 @@ if (!arg('--worker') && (has('--check') || has('--video'))) {
         report.errors.push(...semantic.errors); report.warnings.push(...semantic.warnings);
         report.semantic=semantic;
       } else if (!required && !fsSync.existsSync(reviewPath)) report.warnings.push('v1 舊片：未執行 v1.1 語意紀錄檢查');
+      const ap=path.join(here,'attention-plan.json');
+      const newer=fsSync.existsSync(marker)&&!['1','2'].includes(fsSync.readFileSync(marker,'utf8').trim());
+      if (!report.errors.length && (newer || fsSync.existsSync(ap))) {
+        const bundle=fsSync.existsSync(ap)?JSON.parse(fsSync.readFileSync(ap,'utf8')):null;
+        const attention=validateAttentionBundle(bundle,plan,script,T);
+        report.errors.push(...attention.errors); report.warnings.push(...attention.warnings); report.attention=attention;
+      } else if (!newer && !fsSync.existsSync(ap)) report.warnings.push('舊工程未執行注意力/視覺/傳播計畫檢查');
       await fs.writeFile(path.join(out, 'retention-check.json'), JSON.stringify(report,null,2));
       for (const msg of report.warnings) console.warn('[retention] '+msg);
       if (report.errors.length) {

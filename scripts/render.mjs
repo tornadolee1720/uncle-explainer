@@ -14,6 +14,7 @@ import fs from 'node:fs/promises'; import path from 'node:path'; import http fro
 import {spawn} from 'node:child_process'; import {once} from 'node:events';
 import {createRequire} from 'node:module'; import fsSync from 'node:fs'; import {fileURLToPath} from 'node:url';
 import {stub} from './timeline_stub.mjs';
+import {validateRetention} from './retention.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i >= 0 ? process.argv[i + 1] : null; };
 const has = k => process.argv.includes(k);
@@ -49,6 +50,24 @@ function staleTimeline() {
     if (a !== b) return {err: false, msg: 'script.json 的文案（句子、原聲插段、片名位置）和配音出的時間線（timeline.json）對不上：改了文案就要重新配音、重出時間線（temp_voice.py，或豆包配音後再對齊）'};
   }
   return null;
+}
+// New films have a retention plan. Legacy/demo films remain compatible.
+if (!arg('--worker') && (has('--check') || has('--video'))) {
+  const rp = path.join(here, 'retention.json');
+  if (fsSync.existsSync(rp)) {
+    try {
+      const plan = JSON.parse(fsSync.readFileSync(rp, 'utf8'));
+      const script = JSON.parse(fsSync.readFileSync(path.join(here, 'script.json'), 'utf8'));
+      const report = validateRetention(plan, script, T);
+      await fs.writeFile(path.join(out, 'retention-check.json'), JSON.stringify(report,null,2));
+      for (const msg of report.warnings) console.warn('[retention] '+msg);
+      if (report.errors.length) {
+        for (const msg of report.errors) console.error('[retention] '+msg);
+        process.exit(2);
+      }
+      console.log('[retention] 結構檢查通過；仍須人工語意與成片審查');
+    } catch (e) { console.error('[retention] '+e.message); process.exit(2); }
+  } else console.warn('[retention] 舊片或示例沒有留存台帳，未執行留存檢查');
 }
 const STALE = arg('--worker') ? null : staleTimeline();
 if (STALE) console.log((STALE.err ? '時間線要先重算：' : '注意：') + STALE.msg);

@@ -26,7 +26,6 @@ function loadPlaywright() {
   }
   throw new Error('找不到 playwright：npm i playwright，或在 scripts/local.json 寫 playwright_from 指向裝了它的 package.json');
 }
-const {chromium} = loadPlaywright();
 let LOCAL = {}; try { LOCAL = JSON.parse(fsSync.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'local.json'), 'utf8')); } catch {}
 const FF = process.env.FFMPEG ?? LOCAL.ffmpeg ?? 'ffmpeg';
 const here = path.resolve(arg('--dir') ?? '.'), PAGE = arg('--page') ?? 'index.html';
@@ -67,11 +66,14 @@ if (!arg('--worker') && (has('--check') || has('--video'))) {
       }
       console.log('[retention] 結構檢查通過；仍須人工語意與成片審查');
     } catch (e) { console.error('[retention] '+e.message); process.exit(2); }
+  } else if (fsSync.existsSync(path.join(here, '.retention-required'))) {
+    console.error('[retention] 新片缺少 retention.json'); process.exit(2);
   } else console.warn('[retention] 舊片或示例沒有留存台帳，未執行留存檢查');
 }
 const STALE = arg('--worker') ? null : staleTimeline();
 if (STALE) console.log((STALE.err ? '時間線要先重算：' : '注意：') + STALE.msg);
 if (STALE?.err && has('--check')) process.exit(2);
+const {chromium} = loadPlaywright();
 const mime = {'.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.TTF': 'font/ttf', '.otf': 'font/otf', '.woff2': 'font/woff2'};
 const worker = arg('--worker');

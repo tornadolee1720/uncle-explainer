@@ -6,6 +6,7 @@ import path from 'node:path';
 import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {reviewFingerprint,diagnoseRetention} from '../scripts/retention-semantic.mjs';
+import {attentionFixture} from './attention-fixture.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const run=(script,...args)=>spawnSync(process.execPath,[path.join(root,script),...args],{encoding:'utf8',cwd:root,timeout:60000});
 test('v1.1 gate rejects missing or stale review; approved synthetic clip renders when browser installed',()=>{
@@ -28,6 +29,13 @@ test('v1.1 gate rejects missing or stale review; approved synthetic clip renders
  const stale=run('scripts/render.mjs','--dir',dir,'--video');assert.equal(stale.status,2,stale.stderr);assert.match(stale.stderr,/須重新審查/);
  write('retention-review.json',review);
  const prepare=run('scripts/retention-review.mjs',dir);assert.equal(prepare.status,0,prepare.stderr);assert.equal(JSON.parse(prepare.stdout).fingerprint,review.fingerprint);
+ fs.writeFileSync(path.join(dir,'.retention-required'),'3\n');
+ const missingAttention=run('scripts/render.mjs','--dir',dir,'--video');assert.equal(missingAttention.status,2,missingAttention.stderr);assert.match(missingAttention.stderr,/attention-plan.json/);
+ const bundle=attentionFixture(plan,script,timeline);
+ write('attention-plan.json',{...bundle,review:{...bundle.review,fingerprint:'stale'}});
+ const staleAttention=run('scripts/render.mjs','--dir',dir,'--video');assert.equal(staleAttention.status,2,staleAttention.stderr);assert.match(staleAttention.stderr,/指紋已過期/);
+ write('attention-plan.json',bundle);
+ const attentionPrepare=run('scripts/attention-review.mjs',dir);assert.equal(attentionPrepare.status,0,attentionPrepare.stderr);assert.deepEqual(JSON.parse(attentionPrepare.stdout).errors,[]);
  if(process.env.RETENTION_RENDER_SMOKE==='1'){
  const result=run('scripts/render.mjs','--dir',dir,'--video','--h','108','--workers','1');
  assert.equal(result.status,0,result.stdout+'\n'+result.stderr);

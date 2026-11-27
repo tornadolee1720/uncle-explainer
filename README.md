@@ -59,6 +59,14 @@ npm install && npx playwright install chromium
 ## v1.1 語意審查
 新工程必須依 [語意審查規範](references/retention-semantic.md) 建立 retention-review.json；先用 `node scripts/retention-review.mjs <影片目錄>` 取得指紋及風險，再做實際審查。文案、時間線或台帳變更即失效。v1 舊片相容，但不標示為 v1.1 通過。執行 `node --test tests/retention*.test.mjs`。
 
+## Attention Engine v2.0
+依 [完整流程](references/attention-engine.md) 製作新影片：v1.2 三重鉤子與預期、v1.3 視覺理解、v1.4 分享動機與多樣性；`attention-plan.json` 隨新工程建立並受渲染前檢查。v2.0 回饋 CLI 可解析 Metricool Reels 快照；缺值和不同定義不混算，無真實曲線不做逐秒歸因。只在本機處理私密快照。
+```bash
+node scripts/attention-review.mjs <影片目錄>
+node --test tests/retention*.test.mjs
+node scripts/attention-feedback-cli.mjs <本機快照.json>
+```
+
 ## 目錄
 
 | 位置 | 內容 |

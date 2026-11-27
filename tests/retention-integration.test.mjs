@@ -13,8 +13,9 @@ test('new film rejects incomplete and deleted retention plan before browser laun
  try{
  const created=run('scripts/new_film.mjs',dir,'--vertical');
  assert.equal(created.status,0,created.stderr);
- assert.equal(fs.readFileSync(path.join(dir,'.retention-required'),'utf8').trim(),'2');
+ assert.equal(fs.readFileSync(path.join(dir,'.retention-required'),'utf8').trim(),'3');
  assert.ok(fs.existsSync(path.join(dir,'retention.json')));
+ assert.ok(fs.existsSync(path.join(dir,'attention-plan.json')));
  for(const mode of ['--check','--video']){
  const invalid=run('scripts/render.mjs','--dir',dir,mode);
  assert.equal(invalid.status,2,invalid.stderr);

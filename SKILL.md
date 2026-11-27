@@ -34,6 +34,9 @@ description: 大叔講清楚——全繁體中文、台灣在地的 9:16 解讀�
 ## v1.1 語意審查（新片必須執行）
 在寫完文案、留存台帳及時間線後，讀 `references/retention-semantic.md`，執行 `node scripts/retention-review.mjs <影片目錄>`。逐句做刪句測試；對承諾、每個價值段、每個懸念答案、證據、安全與 CTA 寫下真實審查理由與逐字引文，建立 retention-review.json，處理 CLI 列出的風險。不得由工具自動填 pass，不得假冒真人審核；修稿或正式配音後指紋改變必須重新審查。--check 與 --video 都會攔截缺漏、過期或未處理風險；視覺、語意和證據正確性仍須實際審查，勿把程式通過當作流量保證。舊 v1 影片仍可使用，未升級須標示。測試：`node --test tests/retention*.test.mjs`。
 
+## Attention Engine v2.0（新工程必須依序執行）
+讀 `references/attention-engine.md`：先 v1.2 設計觀眾、三重鉤子、認知預期和微型鉤子；再 v1.3 寫視覺功能、知識轉譯、字卡與音畫關係；再 v1.4 定義分享動機、敘事路線和自然重播。完成 attention-plan.json，執行 `node scripts/attention-review.mjs <影片目錄>`，處理缺漏與風險並記錄真實審查。任何修改後重驗，--check/--video 攔截未通過的新版計畫；原留存、語意、專業安全及成片審查依然有效。發布後 v2.0 使用 Metricool 可用指標和 `node scripts/attention-feedback-cli.mjs <本機快照.json>` 做唯讀回饋，明確區分缺值、同觀察齡、自然/付費；禁止捏造逐秒留存或自行更新製作規則、發布、提交私人數據。舊工程不假稱新版已驗證。
+
 ## 適合用哪些元件
 
 | 想說的 | 元件 |

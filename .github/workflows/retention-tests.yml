@@ -13,3 +13,7 @@ jobs:
           node-version: '22'
       - run: node --test tests/retention*.test.mjs
       - run: node --check scripts/new_film.mjs && node --check scripts/render.mjs
+      - run: npm install --ignore-scripts
+      - run: npx playwright install --with-deps chromium
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: RETENTION_RENDER_SMOKE=1 node --test tests/retention-render.test.mjs

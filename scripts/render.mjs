@@ -15,6 +15,7 @@ import {spawn} from 'node:child_process'; import {once} from 'node:events';
 import {createRequire} from 'node:module'; import fsSync from 'node:fs'; import {fileURLToPath} from 'node:url';
 import {stub} from './timeline_stub.mjs';
 import {validateRetention} from './retention.mjs';
+import {validateSemanticReview} from './retention-semantic.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i >= 0 ? process.argv[i + 1] : null; };
 const has = k => process.argv.includes(k);
@@ -58,6 +59,14 @@ if (!arg('--worker') && (has('--check') || has('--video'))) {
       const plan = JSON.parse(fsSync.readFileSync(rp, 'utf8'));
       const script = JSON.parse(fsSync.readFileSync(path.join(here, 'script.json'), 'utf8'));
       const report = validateRetention(plan, script, T);
+      const marker=path.join(here,'.retention-required'), reviewPath=path.join(here,'retention-review.json');
+      const required=fsSync.existsSync(marker) && fsSync.readFileSync(marker,'utf8').trim() !== '1';
+      if (!report.errors.length && (required || fsSync.existsSync(reviewPath))) {
+        const review=fsSync.existsSync(reviewPath)?JSON.parse(fsSync.readFileSync(reviewPath,'utf8')):null;
+        const semantic=validateSemanticReview(plan,script,T,review);
+        report.errors.push(...semantic.errors); report.warnings.push(...semantic.warnings);
+        report.semantic=semantic;
+      } else if (!required && !fsSync.existsSync(reviewPath)) report.warnings.push('v1 舊片：未執行 v1.1 語意紀錄檢查');
       await fs.writeFile(path.join(out, 'retention-check.json'), JSON.stringify(report,null,2));
       for (const msg of report.warnings) console.warn('[retention] '+msg);
       if (report.errors.length) {
@@ -72,7 +81,7 @@ if (!arg('--worker') && (has('--check') || has('--video'))) {
 }
 const STALE = arg('--worker') ? null : staleTimeline();
 if (STALE) console.log((STALE.err ? '時間線要先重算：' : '注意：') + STALE.msg);
-if (STALE?.err && has('--check')) process.exit(2);
+if (STALE?.err && (has('--check') || has('--video'))) process.exit(2);
 const {chromium} = loadPlaywright();
 const mime = {'.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.TTF': 'font/ttf', '.otf': 'font/otf', '.woff2': 'font/woff2'};

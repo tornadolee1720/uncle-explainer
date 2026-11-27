@@ -56,6 +56,9 @@ npm install && npx playwright install chromium
 ## 注意力留存（v1）
 新建正式影片會產生 retention.json；在寫文案、導演表時依 [留存引擎](references/retention.md) 填寫。--check 與 --video 會攔截未完成或結構不合格的台帳，並輸出 out/retention-check.json。舊片和示例不受強制遷移；缺少台帳時會提示未驗證。執行 `node --test tests/retention.test.mjs` 測試結構檢查器。這不是完播率保證，也不取代人工審片。
 
+## v1.1 語意審查
+新工程必須依 [語意審查規範](references/retention-semantic.md) 建立 retention-review.json；先用 `node scripts/retention-review.mjs <影片目錄>` 取得指紋及風險，再做實際審查。文案、時間線或台帳變更即失效。v1 舊片相容，但不標示為 v1.1 通過。執行 `node --test tests/retention*.test.mjs`。
+
 ## 目錄
 
 | 位置 | 內容 |

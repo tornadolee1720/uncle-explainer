@@ -46,7 +46,7 @@ cp(path.join(src, 'film.js'), path.join(D, 'film.js'));
 cp(path.join(src, 'script.json'), path.join(D, 'script.json'));
 copyLib(); linkFonts();
 if (!DEMO) {
-  fs.writeFileSync(path.join(D, '.retention-required'), '1\n');
+  fs.writeFileSync(path.join(D, '.retention-required'), '2\n');
   fs.writeFileSync(path.join(D, 'retention.json'), JSON.stringify({version:1,mode:'explainer',promise:'',beats:[],editorial:{}}, null, 2)+'\n');
 }
 for (const d of ['assets/img', 'assets/clips', 'assets/cut', 'voice', 'out']) fs.mkdirSync(path.join(D, d), {recursive: true});

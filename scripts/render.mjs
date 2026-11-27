@@ -14,6 +14,7 @@ import fs from 'node:fs/promises'; import path from 'node:path'; import http fro
 import {spawn} from 'node:child_process'; import {once} from 'node:events';
 import {createRequire} from 'node:module'; import fsSync from 'node:fs'; import {fileURLToPath} from 'node:url';
 import {stub} from './timeline_stub.mjs';
+import {validateRetention} from './retention.mjs';
 
 const arg = k => { const i = process.argv.indexOf(k); return i >= 0 ? process.argv[i + 1] : null; };
 const has = k => process.argv.includes(k);
@@ -25,7 +26,6 @@ function loadPlaywright() {
   }
   throw new Error('找不到 playwright：npm i playwright，或在 scripts/local.json 寫 playwright_from 指向裝了它的 package.json');
 }
-const {chromium} = loadPlaywright();
 let LOCAL = {}; try { LOCAL = JSON.parse(fsSync.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'local.json'), 'utf8')); } catch {}
 const FF = process.env.FFMPEG ?? LOCAL.ffmpeg ?? 'ffmpeg';
 const here = path.resolve(arg('--dir') ?? '.'), PAGE = arg('--page') ?? 'index.html';
@@ -50,9 +50,30 @@ function staleTimeline() {
   }
   return null;
 }
+// New films have a retention plan. Legacy/demo films remain compatible.
+if (!arg('--worker') && (has('--check') || has('--video'))) {
+  const rp = path.join(here, 'retention.json');
+  if (fsSync.existsSync(rp)) {
+    try {
+      const plan = JSON.parse(fsSync.readFileSync(rp, 'utf8'));
+      const script = JSON.parse(fsSync.readFileSync(path.join(here, 'script.json'), 'utf8'));
+      const report = validateRetention(plan, script, T);
+      await fs.writeFile(path.join(out, 'retention-check.json'), JSON.stringify(report,null,2));
+      for (const msg of report.warnings) console.warn('[retention] '+msg);
+      if (report.errors.length) {
+        for (const msg of report.errors) console.error('[retention] '+msg);
+        process.exit(2);
+      }
+      console.log('[retention] 結構檢查通過；仍須人工語意與成片審查');
+    } catch (e) { console.error('[retention] '+e.message); process.exit(2); }
+  } else if (fsSync.existsSync(path.join(here, '.retention-required'))) {
+    console.error('[retention] 新片缺少 retention.json'); process.exit(2);
+  } else console.warn('[retention] 舊片或示例沒有留存台帳，未執行留存檢查');
+}
 const STALE = arg('--worker') ? null : staleTimeline();
 if (STALE) console.log((STALE.err ? '時間線要先重算：' : '注意：') + STALE.msg);
 if (STALE?.err && has('--check')) process.exit(2);
+const {chromium} = loadPlaywright();
 const mime = {'.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.mjs': 'text/javascript', '.json': 'application/json',
   '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ttf': 'font/ttf', '.TTF': 'font/ttf', '.otf': 'font/otf', '.woff2': 'font/woff2'};
 const worker = arg('--worker');

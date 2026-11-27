@@ -53,6 +53,9 @@ npm install && npx playwright install chromium
 5. `--sheet` 看聯絡表 → `--video` 出片 → `python scripts/mix.py <影片目錄>` 混音
 6. `python scripts/uncle_endcard.py 成片.mp4 最終.mp4 --line "一句重點"` 接品牌結尾卡
 
+## 注意力留存（v1）
+新建正式影片會產生 retention.json；在寫文案、導演表時依 [留存引擎](references/retention.md) 填寫。--check 與 --video 會攔截未完成或結構不合格的台帳，並輸出 out/retention-check.json。舊片和示例不受強制遷移；缺少台帳時會提示未驗證。執行 `node --test tests/retention.test.mjs` 測試結構檢查器。這不是完播率保證，也不取代人工審片。
+
 ## 目錄
 
 | 位置 | 內容 |

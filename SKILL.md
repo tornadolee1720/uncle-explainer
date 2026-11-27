@@ -31,6 +31,9 @@ description: 大叔講清楚——全繁體中文、台灣在地的 9:16 解讀�
 ## 留存引擎 v1（新片必須執行）
 在站 1 文案及站 2 導演表之前讀 `references/retention.md`，依片長選模式，先安排觀眾承諾、早期價值、必要懸念與答案，再寫 CTA。每個新工程自動建立 `retention.json`，依 script.json 的句子 ID 填完並做語意核對；不要為通過檢查而填假資料。原始旁白不可為硬套公式而改動，必要時調整段落或回報限制。衛教安全訊息優先，不必為留存延後。跑 `node scripts/render.mjs --dir <影片目錄> --check`，有結構錯誤先修；正式旁白對齊後重跑。舊片與 demo 不強制遷移，未檢查不得聲稱通過。單元測試：`node --test tests/retention.test.mjs`。原有的證據、配音、素材、審片與結尾卡規則照常適用。
 
+## v1.1 語意審查（新片必須執行）
+在寫完文案、留存台帳及時間線後，讀 `references/retention-semantic.md`，執行 `node scripts/retention-review.mjs <影片目錄>`。逐句做刪句測試；對承諾、每個價值段、每個懸念答案、證據、安全與 CTA 寫下真實審查理由與逐字引文，建立 retention-review.json，處理 CLI 列出的風險。不得由工具自動填 pass，不得假冒真人審核；修稿或正式配音後指紋改變必須重新審查。--check 與 --video 都會攔截缺漏、過期或未處理風險；視覺、語意和證據正確性仍須實際審查，勿把程式通過當作流量保證。舊 v1 影片仍可使用，未升級須標示。測試：`node --test tests/retention*.test.mjs`。
+
 ## 適合用哪些元件
 
 | 想說的 | 元件 |
